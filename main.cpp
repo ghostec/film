@@ -9,8 +9,9 @@ class vec3 {
 private:
   double v_[3];
 public:
+  vec3() : v_{0, 0, 0} {}
   vec3(double v) : v_{v, v, v} {}
-  vec3(double a = 0, double b = 0, double c = 0) : v_{a, b, c} {}
+  vec3(double a, double b, double c) : v_{a, b, c} {}
   double operator[](const size_t i) const { return v_[i]; }
   vec3 operator+(const vec3 b) const { return vec3(v_[0] + b[0], v_[1] + b[1], v_[2] + b[2]); }
   vec3 operator-(const vec3 b) const { return vec3(v_[0] - b[0], v_[1] - b[1], v_[2] - b[2]); }
@@ -85,8 +86,10 @@ bool intersect(const ray r, double t, int id) {
   return t < inf;
 }
 
-int main() {
-  vec3 v(1,2,3);
-  std::cout << v[2] << std::endl;
+int main(int argc, char *argv[]) {
+  int w = 1024, h = 768, samps = (argc == 2) ? atoi(argv[1]) / 4 : 1; // # samples 
+  ray cam(vec3(50,52,295.6), vec3(0,-0.042612,-1).normalize());       // cam pos, dir 
+  vec3 cx(w*.5135/h), cy = (cx.cross(cam.direction())).normalize()*.5135, r, *c = new vec3[w * h]; 
+#pragma omp parallel for schedule(dynamic, 1) private(r)       // OpenMP  
   return 0;
 }
