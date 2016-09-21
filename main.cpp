@@ -1,81 +1,10 @@
 #include <math.h>    // smallpt, a Path Tracer by Kevin Beason, 2008
 #include <stdio.h>   //        Remove "-fopenmp" for g++ version < 4.2
 #include <stdlib.h>  // Make : g++ -O3 -fopenmp smallpt.cpp -o smallpt
-
-class vec3 {  // Usage: time ./smallpt 5000 && xv image.ppm
- private:
-  double v_[3];
-
- public:
-  vec3(double x = 0, double y = 0, double z = 0) : v_{x, y, z} {}
-  double operator[](const size_t i) const { return v_[i]; }
-  vec3 operator+(const vec3 b) const {
-    return vec3(v_[0] + b[0], v_[1] + b[1], v_[2] + b[2]);
-  }
-  vec3 operator-(const vec3 b) const {
-    return vec3(v_[0] - b[0], v_[1] - b[1], v_[2] - b[2]);
-  }
-  vec3 operator*(double b) const {
-    return vec3(v_[0] * b, v_[1] * b, v_[2] * b);
-  }
-  vec3 operator*(const vec3 b) const {
-    return vec3(v_[0] * b[0], v_[1] * b[1], v_[2] * b[2]);
-  }
-  vec3 &normalize() {
-    return *this = *this *
-                   (1 / sqrt(v_[0] * v_[0] + v_[1] * v_[1] + v_[2] * v_[2]));
-  }
-  double dot(const vec3 b) const {
-    return v_[0] * b[0] + v_[1] * b[1] + v_[2] * b[2];
-  }  // cross:
-  vec3 cross(const vec3 b) const {
-    return vec3(v_[1] * b[2] - v_[2] * b[1], v_[2] * b[0] - v_[0] * b[2],
-                v_[0] * b[1] - v_[1] * b[0]);
-  }
-};
-
-class ray {
- private:
-  vec3 o_, d_;
-
- public:
-  ray(vec3 o, vec3 d) : o_(o), d_(d) {}
-  vec3 origin() const { return o_; }
-  vec3 direction() const { return d_; }
-};
-
-enum class refl_t {
-  diffuse,
-  specular,
-  refractive
-};
-
-class sphere {
- private:
-  double r_;        // radius
-  vec3 p_, e_, c_;  // position, emission, color
-  refl_t refl_;     // reflection type (diffuse, specular, refractive)
-
- public:
-  sphere(double r, vec3 p, vec3 e, vec3 c, refl_t refl)
-      : r_(r), p_(p), e_(e), c_(c), refl_(refl) {}
-  double intersect(const ray r) const {  // returns distance, 0 if nohit
-    vec3 op =
-        p_ - r.origin();  // Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
-    double t, eps = 1e-4, b = op.dot(r.direction()),
-              det = b * b - op.dot(op) + r_ * r_;
-    if (det < 0)
-      return 0;
-    else
-      det = sqrt(det);
-    return (t = b - det) > eps ? t : ((t = b + det) > eps ? t : 0);
-  }
-  double radius() const { return r_; }
-  vec3 position() const { return p_; }
-  vec3 emission() const { return e_; }
-  vec3 color() const { return c_; }
-  refl_t refl() const { return refl_; }
-};
+#include "vec3.h"
+#include "ray.h"
+#include "sphere.h"
+#include "refl_t.h"
 
 sphere spheres[] = {
     // Scene: radius, position, emission, color, material
@@ -144,10 +73,8 @@ vec3 radiance(const ray r, int depth, unsigned short *Xi) {
   ray reflray(
       x,
       r.direction() -
-          n * 2 *
-              n.dot(
-                  r.direction()));  // Ideal dielectric refl_t::refractive
-  bool into = n.dot(nl) > 0;        // ray from outside going in?
+          n * 2 * n.dot(r.direction()));  // Ideal dielectric refl_t::refractive
+  bool into = n.dot(nl) > 0;              // ray from outside going in?
   double nc = 1, nt = 1.5, nnt = into ? nc / nt : nt / nc,
          ddn = r.direction().dot(nl), cos2t;
   if ((cos2t = 1 - nnt * nnt * (1 - ddn * ddn)) <
