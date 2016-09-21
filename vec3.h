@@ -20,9 +20,14 @@ class vec3 {
   vec3 operator*(const vec3 b) const {
     return vec3(v_[0] * b[0], v_[1] * b[1], v_[2] * b[2]);
   }
+  double length() const {
+    return sqrt(v_[0] * v_[0] + v_[1] * v_[1] + v_[2] * v_[2]);
+  }
+  vec3 hat() const {
+    return *this * (1 / length());
+  }
   vec3 &normalize() {
-    return *this = *this *
-                   (1 / sqrt(v_[0] * v_[0] + v_[1] * v_[1] + v_[2] * v_[2]));
+    return *this = hat();
   }
   double dot(const vec3 b) const {
     return v_[0] * b[0] + v_[1] * b[1] + v_[2] * b[2];
