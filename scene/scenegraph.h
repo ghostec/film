@@ -12,10 +12,10 @@ class scenegraph {
 public:
   scenegraph();
   ~scenegraph();
-  std::vector<hitable::hitable> GetObjects() const;
+  std::vector<hitable::hitable*> GetObjects() const;
   void build();
 private:
-  std::vector<hitable::hitable> objects;
+  std::vector<hitable::hitable*> objects;
 };
 
 }

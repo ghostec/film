@@ -9,12 +9,12 @@ scenegraph::scenegraph() {}
 
 scenegraph::~scenegraph() {}
 
-std::vector<hitable::hitable> scenegraph::GetObjects() const {
+std::vector<hitable::hitable*> scenegraph::GetObjects() const {
   return objects;
 }
 
 void scenegraph::build() {
-  hitable::sphere sphere;
+  hitable::sphere* sphere = new hitable::sphere();
 
   objects.push_back(sphere);
 }
