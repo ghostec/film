@@ -6,18 +6,18 @@
 
 int main() {
   film::scene::renderer renderer;
-  film::scene::film film(400, 300);
-  film::scene::scenegraph* scenegraph = new film::scene::scenegraph();
-  film::tracers::tracer* tracer = new film::tracers::singlesphere(scenegraph);
+  film::scene::film* film_ptr = new film::scene::film(400, 300);
+  film::scene::scenegraph* scenegraph_ptr = new film::scene::scenegraph();
+  film::tracers::tracer* tracer_ptr = new film::tracers::singlesphere(scenegraph_ptr);
   
-  scenegraph->build();
+  scenegraph_ptr->build();
 
-  renderer.SetFilm(film);
-  renderer.SetSceneGraph(scenegraph);
-  renderer.SetTracer(tracer);
+  renderer.SetFilm(film_ptr);
+  renderer.SetSceneGraph(scenegraph_ptr);
+  renderer.SetTracer(tracer_ptr);
 
   renderer.Render();
-  renderer.SavePPM();
+  film_ptr->SavePPM();
 
   return 0;
 }

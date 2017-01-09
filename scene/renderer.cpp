@@ -6,20 +6,20 @@ namespace film {
 
 namespace scene {
 
-renderer::renderer() : _film(film(400, 300)), _scenegraph(nullptr) {}
+renderer::renderer() : film_ptr(nullptr), scenegraph_ptr(nullptr) {}
 
 renderer::~renderer() {}
 
-void renderer::SetFilm(const film __film) {
-  _film = __film;
+void renderer::SetFilm(film* _film_ptr) {
+  film_ptr = _film_ptr;
 }
 
-void renderer::SetSceneGraph(scenegraph* __scenegraph) {
-  _scenegraph = __scenegraph;
+void renderer::SetSceneGraph(scenegraph* _scenegraph_ptr) {
+  scenegraph_ptr = _scenegraph_ptr;
 }
 
-void renderer::SetTracer(tracers::tracer* _tracer) {
-  tracer = _tracer;
+void renderer::SetTracer(tracers::tracer* _tracer_ptr) {
+  tracer_ptr = _tracer_ptr;
 }
 
 void renderer::Render() {
@@ -30,23 +30,19 @@ void renderer::Render() {
 
   ray.direction = math::vec3(0, 0, -1);
 
-  auto vres = _film.GetVres();
-  auto hres = _film.GetHres();
-  auto s = _film.GetS();
+  auto vres = film_ptr->GetVres();
+  auto hres = film_ptr->GetHres();
+  auto s = film_ptr->GetS();
 
   for(auto r = 0; r < vres; r++) {
     for(auto c = 0; c < hres; c++) {
       x = s * (c - 0.5 * (hres - 1.0));
       y = s * (r - 0.5 * (vres - 1.0));
       ray.origin = math::point3(x, y, zw);
-      color = tracer->TraceRay(ray);
-      _film[r * hres + c] = color;
+      color = tracer_ptr->TraceRay(ray);
+      (*film_ptr)[r * hres + c] = color;
     }
   }
-}
-
-void renderer::SavePPM() const {
-  _film.SavePPM();
 }
 
 }

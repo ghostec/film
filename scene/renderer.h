@@ -14,14 +14,13 @@ public:
   renderer();
   ~renderer();
   void Render();
-  void SetFilm(const film __film);
-  void SetSceneGraph(scenegraph* __scenegraph);
-  void SetTracer(tracers::tracer* _tracer);
-  void SavePPM() const;
+  void SetFilm(film* _film_ptr);
+  void SetSceneGraph(scenegraph* _scenegraph_ptr);
+  void SetTracer(tracers::tracer* _tracer_ptr);
 private:
-  film _film;
-  scenegraph* _scenegraph;
-  tracers::tracer* tracer;
+  film* film_ptr;
+  scenegraph* scenegraph_ptr;
+  tracers::tracer* tracer_ptr;
 };
 
 }
