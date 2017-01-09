@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
 project(film)
 
+include_directories(./)
+
 add_subdirectory(math)
 add_subdirectory(hitable)
 

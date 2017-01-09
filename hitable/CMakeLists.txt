@@ -3,6 +3,7 @@ project(Hitable)
 set(HitableFiles
   hit_record.h
   hitable.cpp hitable.h
+  plane.cpp plane.h
 )
 
 add_library(Hitable ${HitableFiles})

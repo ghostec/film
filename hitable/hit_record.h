@@ -1,11 +1,11 @@
 #ifndef HITRECORDH
 #define HITRECORDH
 
-namespace film {
+#include "math/point3.h"
+#include "math/normal.h"
+#include "math/rgb.h"
 
-class math::point3;
-class math::normal;
-class math:rgb;
+namespace film {
 
 namespace hitable {
 

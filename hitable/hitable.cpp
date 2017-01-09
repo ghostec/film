@@ -4,7 +4,7 @@ namespace film {
 
 namespace hitable {
 
-hitable::hitable() {}
+hitable::hitable() : color(math::rgb()) {}
 
 }
 
