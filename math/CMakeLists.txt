@@ -4,6 +4,7 @@ set(MathFiles
   vec3.cpp vec3.h
   point3.cpp point3.h
   normal.cpp normal.h
+  rgb.cpp rgb.h
   ray.cpp ray.h
 )
 
