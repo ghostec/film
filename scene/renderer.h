@@ -14,10 +14,10 @@ public:
   ~renderer();
   void render();
   void SetFilm(const film __film);
-  void SetSceneGraph(const scenegraph __scenegraph);
+  void SetSceneGraph(scenegraph* __scenegraph);
 private:
   film _film;
-  scenegraph _scenegraph;
+  scenegraph* _scenegraph;
 };
 
 }
