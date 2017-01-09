@@ -13,7 +13,7 @@ public:
   scenegraph();
   ~scenegraph();
   std::vector<hitable::hitable*> GetObjects() const;
-  void build();
+  void Build();
 private:
   std::vector<hitable::hitable*> objects;
 };

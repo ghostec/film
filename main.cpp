@@ -10,7 +10,7 @@ int main() {
   film::scene::scenegraph* scenegraph_ptr = new film::scene::scenegraph();
   film::tracers::tracer* tracer_ptr = new film::tracers::singlesphere(scenegraph_ptr);
   
-  scenegraph_ptr->build();
+  scenegraph_ptr->Build();
 
   renderer.SetFilm(film_ptr);
   renderer.SetSceneGraph(scenegraph_ptr);

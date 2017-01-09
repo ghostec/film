@@ -13,7 +13,7 @@ std::vector<hitable::hitable*> scenegraph::GetObjects() const {
   return objects;
 }
 
-void scenegraph::build() {
+void scenegraph::Build() {
   hitable::sphere* sphere = new hitable::sphere();
 
   objects.push_back(sphere);
