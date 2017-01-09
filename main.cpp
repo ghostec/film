@@ -14,6 +14,9 @@ int main() {
 
   renderer.SetFilm(film);
   renderer.SetSceneGraph(scenegraph);
+  renderer.SetTracer(tracer);
+
+  renderer.render();
 
   return 0;
 }
