@@ -5,8 +5,9 @@ include_directories(./)
 
 add_subdirectory(math)
 add_subdirectory(hitable)
+add_subdirectory(scene)
 
-set(LIBRARIES Math Hitable)
+set(LIBRARIES Math Hitable Scene)
 
 add_executable(film main.cpp)
 
