@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.6)
 project(film)
 
 add_subdirectory(math)
+add_subdirectory(hitable)
 
-set(LIBRARIES Math)
+set(LIBRARIES Math Hitable)
 
 add_executable(film main.cpp)
 
