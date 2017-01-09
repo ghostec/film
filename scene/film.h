@@ -16,6 +16,7 @@ public:
   size_t GetHres() const;
   size_t GetVres() const;
   size_t GetS() const;
+  void SavePPM() const;
 private:
   size_t hres, vres;
   float s;

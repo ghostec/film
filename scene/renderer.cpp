@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "math/point3.h"
+#include <iostream>
 
 namespace film {
 
@@ -21,7 +22,7 @@ void renderer::SetTracer(tracers::tracer* _tracer) {
   tracer = _tracer;
 }
 
-void renderer::render() {
+void renderer::Render() {
   math::rgb color;
   math::ray ray;
   double zw = 100.0;
@@ -42,6 +43,10 @@ void renderer::render() {
       _film[r * hres + c] = color;
     }
   }
+}
+
+void renderer::SavePPM() const {
+  _film.SavePPM();
 }
 
 }

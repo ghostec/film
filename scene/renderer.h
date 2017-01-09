@@ -13,10 +13,11 @@ class renderer {
 public:
   renderer();
   ~renderer();
-  void render();
+  void Render();
   void SetFilm(const film __film);
   void SetSceneGraph(scenegraph* __scenegraph);
   void SetTracer(tracers::tracer* _tracer);
+  void SavePPM() const;
 private:
   film _film;
   scenegraph* _scenegraph;
