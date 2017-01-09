@@ -4,6 +4,10 @@ namespace film {
 
 namespace hitable {
 
+plane::plane() : point(math::point3()), normal(math::normal()) {}
+
+plane::plane(const math::point3& p, const math::normal& n) : point(p), normal(n) {}
+
 bool plane::hit(const math::ray& ray, double& t_min, hit_record& rec) const {
   double t = (point - ray.origin) * normal / (ray.direction * normal);
  
