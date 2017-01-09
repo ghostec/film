@@ -2,6 +2,7 @@ project(Tracers)
 
 set(TracersFiles
   tracer.cpp tracer.h
+  singlesphere.cpp singlesphere.h
 )
 
 add_library(Tracers ${TracersFiles})
