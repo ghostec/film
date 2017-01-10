@@ -61,6 +61,13 @@ float rgb::Average() const {
   return 0.3333333333333 * (r + g + b);
 }
 
+inline double clamp(double x) { return x<0 ? 0 : x>1 ? 1 : x; }
+inline int toInt(double x) { return int(pow(clamp(x), 1 / 2.2) * 255 + .5); }
+
+std::array<int, 3> rgb::ToIntArray() const {
+  return  {toInt(r), toInt(g), toInt(b)};
+}
+
 }
 
 }

@@ -1,6 +1,8 @@
 #ifndef RGBH
 #define RGBH
 
+#include <array>
+
 namespace film {
 
 namespace math {
@@ -24,6 +26,7 @@ public:
   rgb& operator+=(const rgb& _r);
   rgb Pow(float p) const;
   float Average() const;
+  std::array<int, 3> ToIntArray() const;
 };
 
 }

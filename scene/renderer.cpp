@@ -22,6 +22,10 @@ void renderer::SetTracer(tracers::tracer* _tracer_ptr) {
   tracer_ptr = _tracer_ptr;
 }
 
+film* renderer::GetFilm() {
+  return film_ptr;
+}
+
 void renderer::Render() {
   math::rgb color;
   math::ray ray;

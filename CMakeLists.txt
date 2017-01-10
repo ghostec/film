@@ -12,6 +12,9 @@ set(LIBRARIES Math Hitable Scene Tracers)
 
 add_executable(film main.cpp)
 
-target_link_libraries(film ${LIBRARIES})
+set(CMAKE_PREFIX_PATH "/usr/local/opt/qt5/")
+find_package(Qt5Widgets)
+
+target_link_libraries(film ${LIBRARIES} Qt5::Widgets)
 
 set_property(TARGET film PROPERTY CXX_STANDARD 14)
