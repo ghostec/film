@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "math/point3.h"
+#include "math/random.h"
 #include <thread>
 
 namespace film {
@@ -54,13 +55,22 @@ void renderer::work() {
     auto s = film_ptr->GetS();
     auto r = job.row;
     auto scene = scenegraph_ptr->GetObjects();
+    auto samples = 4;
+    float invsamples = 1.0 / (samples * samples);
 
     for(auto c = 0; c < hres; c++) {
-      x = s * (c - 0.5 * (hres - 1.0));
-      y = s * (r - 0.5 * (vres - 1.0));
-      ray.origin = math::point3(x, y, zw);
-      color = tracer_ptr->TraceRay(ray, scene);
-      (*film_ptr)[r * hres + c] = color;
+      color = {0.0, 0.0, 0.0};
+
+      for(auto sr = 0; sr < samples; sr++) {
+        for(auto sc = 0; sc < samples; sc++) {
+          x = s * (c - 0.5 * hres + (sc + math::rand_float()) / samples);
+          y = s * (r - 0.5 * vres + (sr + math::rand_float()) / samples);
+          ray.origin = math::point3(x, y, zw);
+          color += tracer_ptr->TraceRay(ray, scene);
+        }
+      }
+
+      (*film_ptr)[r * hres + c] = color * invsamples;
     }
   }
 }

@@ -9,7 +9,7 @@ namespace math {
 
 class rgb {
 public:
-  double r, g, b;
+  float r, g, b;
 
   rgb();
   rgb(float a);

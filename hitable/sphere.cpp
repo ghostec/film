@@ -23,12 +23,11 @@ bool sphere::hit(const math::ray& ray, double& t_min, hit_record& rec) const {
   double denom = 2.0 * a;
   t = (-b - e) / denom;
 
-  rec.color = {1.0, 0.0, 0.0};
-
   if(t > 0.001) {
     t_min = t;
     rec.normal = (temp + t * ray.direction) / radius;
     rec.hit_point = ray.origin + t * ray.direction;
+    rec.color = color;
     return true;
   }
 
@@ -38,6 +37,7 @@ bool sphere::hit(const math::ray& ray, double& t_min, hit_record& rec) const {
     t_min = t;
     rec.normal = (temp + t * ray.direction) / radius;
     rec.hit_point = ray.origin + t * ray.direction;
+    rec.color = color;
     return true;
   }
 

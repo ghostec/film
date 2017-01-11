@@ -22,7 +22,7 @@ void work(film::scene::renderer* renderer) {
   renderer->SetFilm(film_ptr);
   renderer->SetSceneGraph(scenegraph_ptr);
   renderer->SetTracer(tracer_ptr);
-  renderer->SetNThreads(4);
+  renderer->SetNThreads(2);
 
   renderer->Render();
   film_ptr->SavePPM();
@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
   film::scene::renderer renderer;
 
   std::thread t(work, &renderer);
-  t.join();
 
   film::scene::film* film_ptr = nullptr;
   do {
