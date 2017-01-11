@@ -1,6 +1,5 @@
 #include "renderer.h"
 #include "math/point3.h"
-#include <iostream>
 #include <thread>
 
 namespace film {
@@ -54,12 +53,13 @@ void renderer::work() {
     auto hres = film_ptr->GetHres();
     auto s = film_ptr->GetS();
     auto r = job.row;
+    auto scene = scenegraph_ptr->GetObjects();
 
     for(auto c = 0; c < hres; c++) {
       x = s * (c - 0.5 * (hres - 1.0));
       y = s * (r - 0.5 * (vres - 1.0));
       ray.origin = math::point3(x, y, zw);
-      color = tracer_ptr->TraceRay(ray);
+      color = tracer_ptr->TraceRay(ray, scene);
       (*film_ptr)[r * hres + c] = color;
     }
   }

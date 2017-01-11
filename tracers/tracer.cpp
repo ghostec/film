@@ -12,7 +12,7 @@ tracer::~tracer() {
   scenegraph = nullptr;
 }
 
-math::rgb tracer::TraceRay(const math::ray ray) const {
+math::rgb tracer::TraceRay(const math::ray ray, const hitable::hitable* scene) const {
   return {0.0};
 }
 

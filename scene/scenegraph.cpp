@@ -5,18 +5,20 @@ namespace film {
 
 namespace scene {
 
-scenegraph::scenegraph() {}
+scenegraph::scenegraph() : hitable_compose(new hitable::hitable_compose()) {}
 
-scenegraph::~scenegraph() {}
+scenegraph::~scenegraph() {
+  delete hitable_compose;
+}
 
-std::vector<hitable::hitable*> scenegraph::GetObjects() const {
-  return objects;
+hitable::hitable* scenegraph::GetObjects() const {
+  return hitable_compose;
 }
 
 void scenegraph::Build() {
   hitable::sphere* sphere = new hitable::sphere();
 
-  objects.push_back(sphere);
+  hitable_compose->add(sphere);
 }
 
 }

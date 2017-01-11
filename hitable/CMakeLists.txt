@@ -5,6 +5,7 @@ set(HitableFiles
   hitable.cpp hitable.h
   plane.cpp plane.h
   sphere.cpp sphere.h
+  hitable_compose.cpp hitable_compose.h
 )
 
 add_library(Hitable ${HitableFiles})

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "hitable/hitable.h"
+#include "hitable/hitable_compose.h"
 
 namespace film {
 
@@ -12,10 +13,10 @@ class scenegraph {
 public:
   scenegraph();
   ~scenegraph();
-  std::vector<hitable::hitable*> GetObjects() const;
+  hitable::hitable* GetObjects() const;
   void Build();
 private:
-  std::vector<hitable::hitable*> objects;
+  hitable::hitable_compose* hitable_compose;
 };
 
 }
