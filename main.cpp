@@ -22,6 +22,7 @@ void work(film::scene::renderer* renderer) {
   renderer->SetFilm(film_ptr);
   renderer->SetSceneGraph(scenegraph_ptr);
   renderer->SetTracer(tracer_ptr);
+  renderer->SetNThreads(4);
 
   renderer->Render();
   film_ptr->SavePPM();

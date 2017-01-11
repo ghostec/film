@@ -1,12 +1,13 @@
 #include "renderer.h"
 #include "math/point3.h"
 #include <iostream>
+#include <thread>
 
 namespace film {
 
 namespace scene {
 
-renderer::renderer() : film_ptr(nullptr), scenegraph_ptr(nullptr) {}
+renderer::renderer() : film_ptr(nullptr), scenegraph_ptr(nullptr), current_row(0), n_threads(1) {}
 
 renderer::~renderer() {}
 
@@ -26,19 +27,34 @@ film* renderer::GetFilm() {
   return film_ptr;
 }
 
+void renderer::SetNThreads(size_t _n_threads) {
+  n_threads = _n_threads;
+}
+
 void renderer::Render() {
-  math::rgb color;
-  math::ray ray;
-  double zw = 100.0;
-  double x, y;
+  for(auto i = 0; i < n_threads; i++) {
+    std::thread t(&renderer::work, this);
+    t.join();
+  }
+}
 
-  ray.direction = math::vec3(0, 0, -1);
+void renderer::work() {
+  while(true) {
+    auto job = jobScheduler();
+    if(job.status == render_job_status::done) return;
 
-  auto vres = film_ptr->GetVres();
-  auto hres = film_ptr->GetHres();
-  auto s = film_ptr->GetS();
+    math::rgb color;
+    math::ray ray;
+    double zw = 100.0;
+    double x, y;
 
-  for(auto r = 0; r < vres; r++) {
+    ray.direction = math::vec3(0, 0, -1);
+
+    auto vres = film_ptr->GetVres();
+    auto hres = film_ptr->GetHres();
+    auto s = film_ptr->GetS();
+    auto r = job.row;
+
     for(auto c = 0; c < hres; c++) {
       x = s * (c - 0.5 * (hres - 1.0));
       y = s * (r - 0.5 * (vres - 1.0));
@@ -47,6 +63,12 @@ void renderer::Render() {
       (*film_ptr)[r * hres + c] = color;
     }
   }
+}
+
+render_job renderer::jobScheduler() {
+  auto vres = film_ptr->GetVres();
+  if(current_row >= vres) return { render_job_status::done };
+  return { render_job_status::work, current_row++ };
 }
 
 }
