@@ -10,12 +10,12 @@
 #include "scene/film.h"
 #include "scene/scenegraph.h"
 #include "scene/renderer.h"
-#include "tracers/singlesphere.h"
+#include "tracers/multiple_objects.h"
 
 void work(film::scene::renderer* renderer) {
   film::scene::film* film_ptr = new film::scene::film(400, 300);
   film::scene::scenegraph* scenegraph_ptr = new film::scene::scenegraph();
-  film::tracers::tracer* tracer_ptr = new film::tracers::singlesphere(scenegraph_ptr);
+  film::tracers::tracer* tracer_ptr = new film::tracers::multiple_objects();
   
   scenegraph_ptr->Build();
 

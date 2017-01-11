@@ -1,5 +1,5 @@
-#ifndef SINGLESPHEREH
-#define SINGLESPHEREH
+#ifndef MULTIPLEOBJECTSH 
+#define MULTIPLEOBJECTSH
 
 #include "tracer.h"
 
@@ -7,11 +7,10 @@ namespace film {
 
 namespace tracers {
 
-class singlesphere : public tracer {
+class multiple_objects : public tracer {
 public:
-  singlesphere();
-  singlesphere(scene::scenegraph* _scenegraph);
-  ~singlesphere();
+  multiple_objects();
+  ~multiple_objects();
   virtual math::rgb TraceRay(const math::ray ray, const hitable::hitable* scene) const;
 };
 
@@ -20,3 +19,4 @@ public:
 }
 
 #endif
+
