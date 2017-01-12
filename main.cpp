@@ -11,17 +11,26 @@
 #include "scene/scenegraph.h"
 #include "scene/renderer.h"
 #include "tracers/multiple_objects.h"
+#include "cameras/pinhole.h"
 
 void work(film::scene::renderer* renderer) {
   film::scene::film* film_ptr = new film::scene::film(400, 300);
   film::scene::scenegraph* scenegraph_ptr = new film::scene::scenegraph();
   film::tracers::tracer* tracer_ptr = new film::tracers::multiple_objects();
-  
+  film::cameras::pinhole* camera_ptr = new film::cameras::pinhole();
+
+  camera_ptr->SetUp({0, 1, 0});
+  camera_ptr->SetEye({-10, 4, 7});
+  camera_ptr->SetLookAt({0, 0, 0});
+  camera_ptr->d = 800;
+  camera_ptr->ComputeUvw();
+
   scenegraph_ptr->Build();
 
   renderer->SetFilm(film_ptr);
   renderer->SetSceneGraph(scenegraph_ptr);
   renderer->SetTracer(tracer_ptr);
+  renderer->SetCamera(camera_ptr);
   renderer->SetNThreads(2);
 
   renderer->Render();

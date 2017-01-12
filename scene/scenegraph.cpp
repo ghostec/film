@@ -17,7 +17,7 @@ hitable::hitable* scenegraph::GetObjects() const {
 
 void scenegraph::Build() {
   hitable::sphere* sphere1 = new hitable::sphere();
-  hitable::sphere* sphere2 = new hitable::sphere({-40, 30, 0}, 85);
+  hitable::sphere* sphere2 = new hitable::sphere({3, 0, -2}, 1);
   sphere1->SetColor({1,0,0});
   sphere2->SetColor({1,1,0});
 

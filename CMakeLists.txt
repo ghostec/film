@@ -7,8 +7,9 @@ add_subdirectory(math)
 add_subdirectory(hitable)
 add_subdirectory(scene)
 add_subdirectory(tracers)
+add_subdirectory(cameras)
 
-set(LIBRARIES Math Hitable Scene Tracers)
+set(LIBRARIES Math Hitable Scene Tracers Cameras)
 
 add_executable(film main.cpp)
 

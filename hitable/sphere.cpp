@@ -5,7 +5,7 @@ namespace film {
 
 namespace hitable {
 
-sphere::sphere() : center(math::point3()), radius(85.0) {}
+sphere::sphere() : center(math::point3()), radius(1) {}
 
 sphere::sphere(const math::point3& c, const double r) : center(c), radius(r) {}
 
