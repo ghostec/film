@@ -19,7 +19,6 @@ public:
   void SetSceneGraph(scenegraph* _scenegraph_ptr);
   void SetTracer(tracers::tracer* _tracer_ptr);
   void SetCamera(cameras::camera* _camera_ptr);
-  void SetNThreads(size_t _n_threads);
   film* GetFilm();
 private:
   film* film_ptr;

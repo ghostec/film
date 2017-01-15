@@ -22,6 +22,10 @@ void camera::SetUp(const math::vec3 _up) {
   up = _up;
 }
 
+void camera::SetNThreads(const size_t _n_threads) {
+  n_threads = _n_threads;
+}
+
 void camera::ComputeUvw() {
   w = eye - lookat;
   w.Normalize();
@@ -31,7 +35,7 @@ void camera::ComputeUvw() {
 }
 
 void camera::RenderScene(hitable::hitable* scene_ptr, tracers::tracer* tracer_ptr, scene::film* film_ptr) {
-  for(auto i = 0; i < 2; i++) {
+  for(auto i = 0; i < n_threads; i++) {
     std::thread t(&camera::renderScene, this, scene_ptr, tracer_ptr, film_ptr);
     t.join();
   }

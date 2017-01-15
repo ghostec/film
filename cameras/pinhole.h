@@ -12,8 +12,10 @@ public:
   pinhole();
   ~pinhole();
   math::vec3 RayDirection(const double x, const double y);
-  float d, zoom;
+  void SetPlaneDistance(const float _plane_distance);
+  void SetZoom(const float _zoom);
 private:
+  float plane_distance, zoom;
   virtual void renderScene(hitable::hitable* scene_ptr, tracers::tracer* tracer_ptr, scene::film* film_ptr);
 };
 

@@ -13,7 +13,7 @@
 #include "tracers/multiple_objects.h"
 #include "cameras/pinhole.h"
 
-void work(film::scene::renderer* renderer) {
+void work(film::scene::renderer* renderer_ptr) {
   film::scene::film* film_ptr = new film::scene::film(400, 300);
   film::scene::scenegraph* scenegraph_ptr = new film::scene::scenegraph();
   film::tracers::tracer* tracer_ptr = new film::tracers::multiple_objects();
@@ -22,18 +22,18 @@ void work(film::scene::renderer* renderer) {
   camera_ptr->SetUp({0, 1, 0});
   camera_ptr->SetEye({-10, 4, 7});
   camera_ptr->SetLookAt({0, 0, 0});
-  camera_ptr->d = 800;
+  camera_ptr->SetPlaneDistance(800);
+  camera_ptr->SetNThreads(2);
   camera_ptr->ComputeUvw();
 
   scenegraph_ptr->Build();
 
-  renderer->SetFilm(film_ptr);
-  renderer->SetSceneGraph(scenegraph_ptr);
-  renderer->SetTracer(tracer_ptr);
-  renderer->SetCamera(camera_ptr);
-  renderer->SetNThreads(2);
+  renderer_ptr->SetFilm(film_ptr);
+  renderer_ptr->SetSceneGraph(scenegraph_ptr);
+  renderer_ptr->SetTracer(tracer_ptr);
+  renderer_ptr->SetCamera(camera_ptr);
 
-  renderer->Render();
+  renderer_ptr->Render();
   film_ptr->SavePPM();
 }
 

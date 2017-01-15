@@ -31,12 +31,15 @@ public:
   void SetEye(const math::point3 _eye);
   void SetLookAt(const math::point3 _lookat);
   void SetUp(const math::vec3 _up);
+  void SetNThreads(const size_t _n_threads);
 protected:
-  render_job jobScheduler(scene::film* film_ptr);
   math::point3 eye, lookat;
   math::vec3 up, u, v, w;
   float exposure_time;
+  // threading
   std::atomic_size_t current_row;
+  size_t n_threads;
+  render_job jobScheduler(scene::film* film_ptr);
 private:
   virtual void renderScene(hitable::hitable* scene_ptr, tracers::tracer* tracer_ptr, scene::film* film_ptr) = 0;
 };

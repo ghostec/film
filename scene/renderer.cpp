@@ -31,10 +31,6 @@ film* renderer::GetFilm() {
   return film_ptr;
 }
 
-void renderer::SetNThreads(size_t _n_threads) {
-  n_threads = _n_threads;
-}
-
 void renderer::Render() {
   camera_ptr->RenderScene(scenegraph_ptr->GetObjects(), tracer_ptr, film_ptr);
 }

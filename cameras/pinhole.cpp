@@ -6,7 +6,7 @@ namespace film {
 
 namespace cameras {
 
-pinhole::pinhole() : d(100), zoom(1), camera() {}
+pinhole::pinhole() : plane_distance(100), zoom(1), camera() {}
 
 pinhole::~pinhole() {}
 
@@ -47,7 +47,15 @@ void pinhole::renderScene(hitable::hitable* scene_ptr, tracers::tracer* tracer_p
 }
 
 math::vec3 pinhole::RayDirection(const double x, const double y) {
-  return (x * u + y * v - d * w).Hat();
+  return (x * u + y * v - plane_distance * w).Hat();
+}
+
+void pinhole::SetPlaneDistance(const float _plane_distance) {
+  plane_distance = _plane_distance;
+}
+
+void pinhole::SetZoom(const float _zoom) {
+  zoom = _zoom;
 }
 
 }
