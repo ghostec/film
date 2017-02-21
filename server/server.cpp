@@ -17,13 +17,17 @@ int Server::start() {
   uv_ip4_addr("0.0.0.0", 3000, &addr);
 
   uv_tcp_bind(&server, (const struct sockaddr*) &addr, 0);
-  int r = uv_listen((uv_stream_t*) &server, SOMAXCONN, on_new_connection);
+  int r = uv_listen((uv_stream_t*) &server, SOMAXCONN, connection_cb);
   if (r) {
     fprintf(stderr, "Listen error %s\n", uv_strerror(r));
     return 1;
   }
 
   return uv_run(loop, UV_RUN_DEFAULT);
+}
+
+void Server::write(Message message) {
+  return;
 }
 
 }
