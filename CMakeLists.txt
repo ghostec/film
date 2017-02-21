@@ -3,19 +3,12 @@ project(film)
 
 include_directories(./)
 
-add_subdirectory(math)
-add_subdirectory(hitable)
-add_subdirectory(scene)
-add_subdirectory(tracers)
-add_subdirectory(cameras)
+add_subdirectory(server)
 
-set(LIBRARIES Math Hitable Scene Tracers Cameras)
+set(LIBRARIES Server)
 
 add_executable(film main.cpp)
 
-set(CMAKE_PREFIX_PATH "/usr/local/opt/qt5/")
-find_package(Qt5Widgets)
+target_link_libraries(film ${LIBRARIES})
 
-target_link_libraries(film ${LIBRARIES} Qt5::Widgets)
-
-set_property(TARGET film PROPERTY CXX_STANDARD 14)
+set_property(GLOBAL PROPERTY CXX_STANDARD 14)
