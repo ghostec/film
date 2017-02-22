@@ -1,5 +1,11 @@
+#ifndef SERVER_SERVERH
+#define SERVER_SERVERH
+
 #include <uv.h>
+#include <vector>
 #include <string>
+#include <functional>
+#include <iostream>
 
 namespace server {
 
@@ -8,13 +14,27 @@ struct Message {
   std::string data;
 };
 
+typedef std::function<void(Message message)> Observer;
+
+void test(Message message);
+
 class Server {
 public:
   Server();
   ~Server();
   int start();
   void write(Message message);
+  void register_observer(Observer observer);
 private:
+  std::vector<Observer> observers;
+
+  void notify_observers(Message message);
+  static void write_cb(uv_write_t* req, int status);
+  static void read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf);
+  static void alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf);
+  static void connection_cb(uv_stream_t *server, int status);
 };
 
 };
+
+#endif
