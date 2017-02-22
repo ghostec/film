@@ -16,16 +16,6 @@ struct Message {
 
 typedef std::function<void(Message message)> Observer;
 
-struct ObserverMessage {
-  Observer observer;
-  Message message;
-};
-
-struct BufferMutex {
-  uv_buf_t* buf;
-  std::mutex* mutex;
-};
-
 class Server {
 public:
   Server();

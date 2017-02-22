@@ -41,13 +41,15 @@ void Server::write(Message message) {
 
   uv_write_t* req = new uv_write_t();
   req->handle = message.handle;
-  req->data = (void*) new BufferMutex({ .buf = buf, .mutex = &write_mutex });
+
+  struct BufMutex { uv_buf_t* buf; std::mutex* mutex; };
+  req->data = (void*) new BufMutex({ .buf = buf, .mutex = &write_mutex });
 
   write_mutex.lock();
   uv_write(req, req->handle, buf, 1,
     [](uv_write_t* req, int status) -> void {
       if(req && req->data) {
-        auto helper = (BufferMutex*) req->data;
+        auto helper = (BufMutex*) req->data;
         helper->mutex->unlock();
         delete helper->buf;
         delete helper;
@@ -60,6 +62,8 @@ void Server::write(Message message) {
 
 void Server::notify_observers(Message message) {
   auto loop = uv_default_loop();
+
+  struct ObserverMessage { Observer observer; Message message; };
 
   for(const auto& observer : observers) {
     uv_work_t* req = new uv_work_t();
