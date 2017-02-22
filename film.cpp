@@ -15,7 +15,9 @@ void Film::set_server(server::Server* server) {
 }
 
 void Film::handle_message(server::Message message) {
-  std::cout << message.data + '\n';
+  //std::cout << message.data + '\n';
+  message.data += '\n';
+  server->write(message);
 }
 
 }

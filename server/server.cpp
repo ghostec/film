@@ -34,12 +34,20 @@ void Server::register_observer(Observer observer) {
 }
 
 void Server::write(Message message) {
-  uv_write_t req;
   uv_buf_t* buf = new uv_buf_t();
-  buf->base = &(std::vector<char>(message.data.begin(), message.data.end()))[0];
-  buf->len = message.data.size();
-  uv_write(&req, message.handle, buf, 1, [](uv_write_t* req, int status) -> void {});
-  delete buf;
+  buf->len = message.data.size() + 1;
+  buf->base = new char[buf->len];
+  memcpy(buf->base, &message.data[0], buf->len);
+
+  uv_write_t* req = new uv_write_t();
+  req->handle = message.handle;
+  req->data = buf->base;
+
+  uv_write(req, req->handle, buf, 1,
+    [](uv_write_t* req, int status) -> void {
+      if(req && req->data) delete (uv_buf_t*) req->data;
+      if(req) delete req;
+  });
 }
 
 // Private members
@@ -50,17 +58,17 @@ void Server::notify_observers(Message message) {
   for(const auto& observer : observers) {
     uv_work_t* req = new uv_work_t();
 
-    req->data = (void *) new ObserverMessage {
+    req->data = (void*) new ObserverMessage {
       .observer = observer,
       .message = message
     };
 
     uv_queue_work(loop, req,
-      [](uv_work_t *req) -> void {
+      [](uv_work_t* req) -> void {
         auto om = (ObserverMessage*) req->data;
         om->observer(om->message);
       },
-      [](uv_work_t *req, int status) -> void {
+      [](uv_work_t* req, int status) -> void {
         delete (ObserverMessage*) req->data;
         delete req;
     });
