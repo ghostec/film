@@ -16,6 +16,11 @@ struct Message {
 
 typedef std::function<void(Message message)> Observer;
 
+struct ObserverMessage {
+  Observer observer;
+  Message message;
+};
+
 class Server {
 public:
   Server();
