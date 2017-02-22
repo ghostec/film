@@ -1,7 +1,12 @@
+#include "film.h"
 #include "server/server.h"
 
 int main() {
-  server::Server server;
-  server.start();
+  film::Film film;
+  film::server::Server* server = new film::server::Server();
+
+  film.set_server(server);
+
+  server->start();
   return 0;
 }

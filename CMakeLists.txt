@@ -7,8 +7,8 @@ add_subdirectory(server)
 
 set(LIBRARIES Server)
 
-add_executable(film main.cpp)
+add_executable(film main.cpp film.cpp)
 
 target_link_libraries(film ${LIBRARIES})
 
-set_property(GLOBAL PROPERTY CXX_STANDARD 14)
+set_property(TARGET film PROPERTY CXX_STANDARD 14)

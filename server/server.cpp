@@ -3,21 +3,14 @@
 #include <iostream>
 #include <stdlib.h>
 #include "server.h"
-#include "callbacks.h"
 
-namespace server {
-
-void test(Message message) {
-  std::cout << "asdfasdf "<< message.data << std::endl;
-}
+namespace film { namespace server {
 
 Server::Server() {}
 Server::~Server() {}
 
 int Server::start() {
   auto loop = uv_default_loop();
-
-  register_observer(test);
 
   uv_tcp_t server;
   uv_tcp_init(loop, &server);
@@ -41,16 +34,18 @@ void Server::register_observer(Observer observer) {
 }
 
 void Server::write(Message message) {
-  return;
+  uv_write_t req;
+  uv_buf_t* buf = new uv_buf_t();
+  buf->base = &(std::vector<char>(message.data.begin(), message.data.end()))[0];
+  buf->len = message.data.size();
+  uv_write(&req, message.handle, buf, 1, [](uv_write_t* req, int status) -> void {});
+  delete buf;
 }
 
+// Private members
 
 void Server::notify_observers(Message message) {
   for(const auto& observer : observers) observer(message);
-}
-
-void Server::write_cb(uv_write_t* req, int status) {
-  if(status < 0) abort();
 }
 
 void Server::read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
@@ -62,9 +57,6 @@ void Server::read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
     if (message_data.empty()) continue;
     ((Server*)handle->data)->notify_observers({ handle, message_data });
   }
-
-  uv_write_t req;
-  uv_write(&req, handle, buf, 1, write_cb);
 }
 
 void Server::alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
@@ -89,4 +81,4 @@ void Server::connection_cb(uv_stream_t *server, int status) {
   }
 }
 
-}
+} }
