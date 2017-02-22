@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include <iostream>
+#include <mutex>
 
 namespace film { namespace server {
 
@@ -21,6 +21,11 @@ struct ObserverMessage {
   Message message;
 };
 
+struct BufferMutex {
+  uv_buf_t* buf;
+  std::mutex* mutex;
+};
+
 class Server {
 public:
   Server();
@@ -30,6 +35,7 @@ public:
   void register_observer(Observer observer);
 private:
   std::vector<Observer> observers;
+  std::mutex write_mutex;
 
   void notify_observers(Message message);
   static void read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf);

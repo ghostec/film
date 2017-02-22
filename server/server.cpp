@@ -41,11 +41,17 @@ void Server::write(Message message) {
 
   uv_write_t* req = new uv_write_t();
   req->handle = message.handle;
-  req->data = buf->base;
+  req->data = (void*) new BufferMutex({ .buf = buf, .mutex = &write_mutex });
 
+  write_mutex.lock();
   uv_write(req, req->handle, buf, 1,
     [](uv_write_t* req, int status) -> void {
-      if(req && req->data) delete (uv_buf_t*) req->data;
+      if(req && req->data) {
+        auto helper = (BufferMutex*) req->data;
+        helper->mutex->unlock();
+        delete helper->buf;
+        delete helper;
+      }
       if(req) delete req;
   });
 }
