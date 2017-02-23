@@ -94,6 +94,9 @@ void Server::read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
     if (message_data.empty()) continue;
     ((Server*)handle->data)->notify_observers({ handle, message_data });
   }
+
+  delete buf->base;
+  delete buf;
 }
 
 void Server::alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
