@@ -1,8 +1,11 @@
 #include <uv.h>
+#include <uv_msg_framing.h>
 #include <sstream>
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdio>
 #include "server.h"
+#include "write.h"
 
 namespace film { namespace server {
 
@@ -33,31 +36,6 @@ void Server::register_observer(Observer observer) {
   observers.push_back(observer);
 }
 
-void Server::write(Message message) {
-  uv_buf_t* buf = new uv_buf_t();
-  buf->len = message.data.size() + 1;
-  buf->base = new char[buf->len];
-  memcpy(buf->base, &message.data[0], buf->len);
-
-  uv_write_t* req = new uv_write_t();
-  req->handle = message.handle;
-
-  struct BufMutex { uv_buf_t* buf; std::mutex* mutex; };
-  req->data = (void*) new BufMutex({ .buf = buf, .mutex = &write_mutex });
-
-  write_mutex.lock();
-  uv_write(req, req->handle, buf, 1,
-    [](uv_write_t* req, int status) -> void {
-      if(req && req->data) {
-        auto helper = (BufMutex*) req->data;
-        helper->mutex->unlock();
-        delete helper->buf;
-        delete helper;
-      }
-      if(req) delete req;
-  });
-}
-
 // Private members
 
 void Server::notify_observers(Message message) {
@@ -85,6 +63,17 @@ void Server::notify_observers(Message message) {
   }
 }
 
+void Server::delete_buf_cb(uv_handle_t* handle, void* ptr) {
+   delete ptr;
+}
+
+void Server::msg_read_cb(uv_stream_t *handle, void *msg, int size) {
+  if (size <= 0) return;
+
+  printf("new message here (%d bytes): %s\n", size, (char*)msg);
+  write({ .handle = handle, .data = (char*) msg, .length = (size_t) size });
+}
+
 void Server::read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
   if (nread <= 0) return;
 
@@ -92,11 +81,12 @@ void Server::read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {
   std::istringstream iss(buf->base);
   while (std::getline(iss, message_data, '\r')) {
     if (message_data.empty()) continue;
-    ((Server*)handle->data)->notify_observers({ handle, message_data });
+    auto data = new char[message_data.size() + 1];
+    memcpy(data, message_data.c_str(), message_data.size());
+    ((Server*)handle->data)->notify_observers({ handle, data });
   }
 
   delete buf->base;
-  delete buf;
 }
 
 void Server::alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
@@ -110,11 +100,11 @@ void Server::connection_cb(uv_stream_t *server, int status) {
   }
 
   auto loop = uv_default_loop();
-  uv_tcp_t* client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
-  uv_tcp_init(loop, client);
+  uv_msg_t* client = new uv_msg_t();
+  uv_msg_init(loop, client, UV_TCP);
   if (uv_accept(server, (uv_stream_t*) client) == 0) {
     client->data = server->data;
-    uv_read_start((uv_stream_t*) client, alloc_cb, read_cb);
+    uv_msg_read_start((uv_msg_t*) client, alloc_cb, msg_read_cb, delete_buf_cb);
   }
   else {
     uv_close((uv_handle_t*) client, NULL);

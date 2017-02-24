@@ -1,6 +1,8 @@
 #include <iostream>
 #include <functional>
 #include <Magick++.h>
+#include <string>
+#include "server/write.h"
 #include "film.h"
 
 namespace film {
@@ -19,6 +21,7 @@ void Film::handle_message(server::Message message) {
   struct rgb
   {
     uint16_t r,g,b;
+    rgb() { r = 255; }
   } __attribute__((__packed__));
 
   auto height = 100, width = 100;
@@ -32,9 +35,12 @@ void Film::handle_message(server::Message message) {
   im.magick("JPEG");
   im.write(&jpeg);
 
-  //message.data += '\n';
-  message.data = jpeg.base64() + '\n';
-  server->write(message);
+  auto buf = new char[jpeg.length() + 2];
+  memcpy(buf, jpeg.data(), jpeg.length());
+  buf[jpeg.length()] = '\r';
+
+  server::Message message_to_send = { .handle = message.handle, .data = buf, .length = jpeg.length() + 2 };
+  server::write(message_to_send);
 }
 
 }
