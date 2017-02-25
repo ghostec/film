@@ -2,7 +2,7 @@
 #include <functional>
 #include <Magick++.h>
 #include <string>
-#include "server/write.h"
+#include "film-network/write.h"
 #include "film.h"
 
 namespace film {
@@ -10,14 +10,14 @@ namespace film {
 Film::Film() {}
 Film::~Film() {}
 
-void Film::set_server(server::Server* server) {
+void Film::set_server(network::Server* server) {
   // unregister if server
 
   this->server = server;
   server->register_observer(std::bind(&Film::handle_message, this, std::placeholders::_1));
 }
 
-void Film::handle_message(server::Message message) {
+void Film::handle_message(network::Message message) {
   size_t height = 100, width = 100;
   auto pixels = std::vector<float>(width * height * 3, 0.5);
   Magick::Image im(width, height, "RGB", Magick::StorageType::FloatPixel, (void*) &pixels[0]);
@@ -31,8 +31,8 @@ void Film::handle_message(server::Message message) {
   auto buf = new char[jpeg.length()];
   memcpy(buf, jpeg.data(), jpeg.length());
 
-  server::Message message_to_send = { .handle = message.handle, .data = buf, .length = jpeg.length() };
-  server::write(message_to_send);
+  network::Message message_to_send = { .handle = message.handle, .data = buf, .length = jpeg.length() };
+  network::write(message_to_send);
 }
 
 }

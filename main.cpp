@@ -3,13 +3,13 @@
 #include <array>
 #include <stdint.h>
 #include "film.h"
-#include "server/server.h"
+#include "film-network/server.h"
 
 int main(int argc, char **argv) {
   Magick::InitializeMagick(*argv);
 
   film::Film film;
-  film::server::Server* server = new film::server::Server();
+  film::network::Server* server = new film::network::Server();
 
   film.set_server(server);
 

@@ -1,7 +1,7 @@
 #ifndef FILMH
 #define FILMH
 
-#include "server/server.h"
+#include "film-network/server.h"
 
 namespace film {
 
@@ -9,11 +9,11 @@ class Film {
 public:
   Film();
   ~Film();
-  void set_server(server::Server* server);
+  void set_server(network::Server* server);
 private:
-  server::Server* server;
+  network::Server* server;
 
-  void handle_message(server::Message message);
+  void handle_message(network::Message message);
 };
 
 }
