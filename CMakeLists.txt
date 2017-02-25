@@ -4,11 +4,11 @@ project(film)
 set(CMAKE_CXX_STANDARD 14)
 
 include(FindGraphicsMagick.cmake)
-include_directories(./ ${GraphicsMagick++_INCLUDE_DIRS})
+include_directories(./ ./deps ${GraphicsMagick++_INCLUDE_DIRS})
 
-add_subdirectory(server)
+add_subdirectory(./deps/film-network)
 
-set(LIBRARIES Server)
+set(LIBRARIES Film_Network)
 
 add_executable(film main.cpp film.cpp)
 target_link_libraries(film ${LIBRARIES} ${GraphicsMagick++_LIBRARIES})

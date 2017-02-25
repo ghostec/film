@@ -18,18 +18,14 @@ void Film::set_server(server::Server* server) {
 }
 
 void Film::handle_message(server::Message message) {
-  struct rgb
-  {
-    uint16_t r,g,b;
-    rgb() { r = 255; }
-  } __attribute__((__packed__));
-
-  auto height = 100, width = 100;
-  auto pixels = std::vector<rgb>(width * height, rgb());
-  std::cout << pixels[0].r << std::endl;
-  Magick::Image im(Magick::Geometry(100, 100), Magick::ColorRGB(1.0, 0.0, 0.0));
-  Magick::Blob jpeg;
+  size_t height = 100, width = 100;
+  auto pixels = std::vector<float>(width * height * 3, 0.5);
+  Magick::Image im(width, height, "RGB", Magick::StorageType::FloatPixel, (void*) &pixels[0]);
+  //Magick::Image im;
+  //im.read("test.png");
   im.magick("JPEG");
+
+  Magick::Blob jpeg;
   im.write(&jpeg);
 
   auto buf = new char[jpeg.length()];
