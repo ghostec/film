@@ -71,7 +71,10 @@ void Server::msg_read_cb(uv_stream_t *handle, void *msg, int size) {
   if (size <= 0) return;
 
   printf("new message here (%d bytes): %s\n", size, (char*)msg);
-  write({ .handle = handle, .data = (char*) msg, .length = (size_t) size });
+  //write({ .handle = handle, .data = (char*) msg, .length = (size_t) size });
+  //auto data = new char[message_data.size() + 1];
+  //memcpy(data, message_data.c_str(), message_data.size());
+  ((Server*)handle->data)->notify_observers({ .handle = handle, .data = (char*) msg, .length = (size_t) size });
 }
 
 void Server::read_cb(uv_stream_t* handle, ssize_t nread, const uv_buf_t* buf) {

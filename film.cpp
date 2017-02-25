@@ -26,20 +26,16 @@ void Film::handle_message(server::Message message) {
 
   auto height = 100, width = 100;
   auto pixels = std::vector<rgb>(width * height, rgb());
-  Magick::Image im;
-  im.size("100x100");
-  im.magick("RGB");
-  Magick::Blob blob(&pixels[0], pixels.size() * sizeof(pixels[0]));
-  im.read(blob);
+  std::cout << pixels[0].r << std::endl;
+  Magick::Image im(Magick::Geometry(100, 100), Magick::ColorRGB(1.0, 0.0, 0.0));
   Magick::Blob jpeg;
   im.magick("JPEG");
   im.write(&jpeg);
 
-  auto buf = new char[jpeg.length() + 2];
+  auto buf = new char[jpeg.length()];
   memcpy(buf, jpeg.data(), jpeg.length());
-  buf[jpeg.length()] = '\r';
 
-  server::Message message_to_send = { .handle = message.handle, .data = buf, .length = jpeg.length() + 2 };
+  server::Message message_to_send = { .handle = message.handle, .data = buf, .length = jpeg.length() };
   server::write(message_to_send);
 }
 
