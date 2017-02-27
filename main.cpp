@@ -1,18 +1,24 @@
-#include <Magick++.h>
-#include <vector>
-#include <array>
-#include <stdint.h>
+#include <iostream>
+#include <functional>
+#include <mutex>
+#include <uv.h>
 #include "film.h"
 #include "film-network/server.h"
+#include "renderer/worker.h"
+
+void print(film::network::Message message) {
+  std::cout << message.data << std::endl;
+}
 
 int main(int argc, char **argv) {
-  Magick::InitializeMagick(*argv);
+  auto server = new film::network::Server();
+  server->start("0.0.0.0", 3001);
+  server->register_observer(std::bind(print, std::placeholders::_1));
 
-  film::Film film;
-  film::network::Server* server = new film::network::Server();
+  auto worker = film::renderer::Worker::create("0.0.0.0", 3001);
 
-  film.set_server(server);
-
-  server->start();
+  std::mutex m;
+  m.lock();
+  m.lock();
   return 0;
 }
