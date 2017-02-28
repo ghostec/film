@@ -1,5 +1,5 @@
 project(Renderer)
-set(RendererFiles worker.cpp)
+set(RendererFiles worker.cpp film.cpp renderer.cpp)
 
 add_subdirectory(math)
 

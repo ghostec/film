@@ -14,11 +14,13 @@ class FilmServer : public Server {
 public:
   FilmServer();
   ~FilmServer();
-  void handle_message(Message message);
 private:
   std::mutex m_handle_message;
   std::unordered_map<uv_stream_t*, std::string> handles;
 
+  void handle_message(Message message);
+  void handle_worker_message(Message message);
+  void handle_client_message(Message message);
   bool is_client(uv_stream_t* handle);
   bool is_worker(uv_stream_t* handle);
 };

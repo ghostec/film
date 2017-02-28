@@ -1,5 +1,6 @@
 #include "film_server.h"
 #include "constants.h"
+#include "film-network/write.h"
 #include <iostream>
 
 namespace film { namespace network {
@@ -22,16 +23,23 @@ void FilmServer::handle_message(Message message) {
   std::unique_lock<std::mutex> lock(m_handle_message);
   if (handles.find(message.handle) == handles.end()) {
     handles[message.handle] = std::string(message.data);
-    lock.unlock();
-    return;
   }
   lock.unlock();
 
-  std::cout << "MSG: " << message.data << std::endl;
   if (is_client(message.handle)) {
     return;
   } else if (is_worker(message.handle)) {
-    std::cout << "WORKER: " << message.data << std::endl;
+    handle_worker_message(message);
+  }
+}
+
+void FilmServer::handle_worker_message(Message message) {
+  if(strcmp(message.data, REGISTER_WORKER_MESSAGE) == 0) {
+    network::write({
+      .handle = message.handle,
+      .data = "SET_FILM 800 600",
+      .length = 17
+    });
   }
 }
 
