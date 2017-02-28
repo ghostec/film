@@ -3,17 +3,14 @@
 #include <mutex>
 #include <uv.h>
 #include "film.h"
-#include "film-network/server.h"
+#include "film-network/write.h"
+#include "network/film_server.h"
+#include "network/constants.h"
 #include "renderer/worker.h"
 
-void print(film::network::Message message) {
-  std::cout << message.data << std::endl;
-}
-
 int main(int argc, char **argv) {
-  auto server = new film::network::Server();
+  auto server = new film::network::FilmServer();
   server->start("0.0.0.0", 3001);
-  server->register_observer(std::bind(print, std::placeholders::_1));
 
   auto worker = film::renderer::Worker::create("0.0.0.0", 3001);
 
