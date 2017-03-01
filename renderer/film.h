@@ -13,6 +13,7 @@ public:
   math::rgb operator[](size_t i);
   size_t get_width();
   size_t get_height();
+  std::vector<math::rgb>& get_pixels();
 private:
   size_t width, height;
   std::vector<math::rgb> pixels;

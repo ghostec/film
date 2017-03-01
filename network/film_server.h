@@ -7,6 +7,7 @@
 #include <uv.h>
 #include "film-network/message.h"
 #include "film-network/server.h"
+#include "coordinator.h"
 
 namespace film { namespace network {
 
@@ -15,14 +16,12 @@ public:
   FilmServer();
   ~FilmServer();
 private:
-  std::mutex m_handle_message;
-  std::unordered_map<uv_stream_t*, std::string> handles;
+  uv_stream_t* client;
+  Coordinator coordinator;
 
-  void handle_message(Message message);
   void handle_worker_message(Message message);
   void handle_client_message(Message message);
-  bool is_client(uv_stream_t* handle);
-  bool is_worker(uv_stream_t* handle);
+  void handle_render_job_result_message(Message message);
 };
 
 } }

@@ -1,19 +1,16 @@
 #ifndef RENDERER_WORKERH
 #define RENDERER_WORKERH
 
+#include <mutex>
 #include "renderer.h"
 #include "film-network/client.h"
 
 namespace film { namespace renderer {
 
-struct Job {
-  int row_start, row_end;
-};
-
 class Worker {
 public:
   static Worker* create(const char* ip, int port);
-  void work(Job job);
+  void work(uv_stream_t* handle, size_t first_row, size_t last_row, size_t film_width);
   network::Client* get_network_client();
 private:
   network::Client* network_client;
@@ -21,7 +18,7 @@ private:
 
   Worker(const char* ip, int port);
   void register_handlers();
-  void handle_set_film_message(network::Message message);
+  void handle_render_job_message(network::Message message);
 };
 
 } }

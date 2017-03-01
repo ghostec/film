@@ -1,46 +1,69 @@
+#include <cstdio>
+#include <regex>
+#include <sstream>
+#include <iostream>
 #include "film_server.h"
 #include "constants.h"
 #include "film-network/write.h"
-#include <iostream>
 
 namespace film { namespace network {
 
 FilmServer::FilmServer() : Server() {
-  register_observer(std::bind(&FilmServer::handle_message, this, std::placeholders::_1));
+  auto film = new renderer::Film(800, 600);
+  coordinator.set_film(film);
+  register_observer(std::bind(&FilmServer::handle_worker_message, this, std::placeholders::_1));
+  register_observer(std::bind(&FilmServer::handle_client_message, this, std::placeholders::_1));
+  register_observer(std::bind(&FilmServer::handle_render_job_result_message, this, std::placeholders::_1));
 }
 
 FilmServer::~FilmServer() {}
 
-bool FilmServer::is_client(uv_stream_t* handle) {
-  return (handles[handle] == CLIENT ? true : false);
+void FilmServer::handle_client_message(Message message) {
+  if(strcmp(message.data, REGISTER_CLIENT_MESSAGE) != 0) return;
+  
+  client = message.handle;
+
+  // send jpeg to client
 }
 
-bool FilmServer::is_worker(uv_stream_t* handle) {
-  return (handles[handle] == WORKER ? true : false);
-}
-
-void FilmServer::handle_message(Message message) {
-  std::unique_lock<std::mutex> lock(m_handle_message);
-  if (handles.find(message.handle) == handles.end()) {
-    handles[message.handle] = std::string(message.data);
-  }
-  lock.unlock();
-
-  if (is_client(message.handle)) {
-    return;
-  } else if (is_worker(message.handle)) {
-    handle_worker_message(message);
-  }
-}
 
 void FilmServer::handle_worker_message(Message message) {
-  if(strcmp(message.data, REGISTER_WORKER_MESSAGE) == 0) {
-    network::write({
-      .handle = message.handle,
-      .data = "SET_FILM 800 600",
-      .length = 17
-    });
-  }
+  if(strcmp(message.data, REGISTER_WORKER_MESSAGE) != 0) return;
+
+  char buffer[100];
+
+  auto film = coordinator.get_film();
+  auto job = coordinator.next_job();
+  sprintf(buffer, "%s %d %d %zu", RENDER_JOB_MESSAGE, job.first_row, job.last_row, film->get_width());
+  printf("%s\n", buffer);
+
+  network::write({
+    .handle = message.handle,
+    .data = buffer,
+    .length = strlen(buffer) + 1
+  });
+}
+
+void FilmServer::handle_render_job_result_message(Message message) {
+  std::smatch matches;
+  std::string msg(message.data);
+
+  if(!std::regex_search(msg, matches, REGEX_RENDER_JOB_RESULT)) return;
+
+  size_t first_row, last_row;
+  size_t film_width;
+  std::stringstream(matches[1]) >> first_row;
+  std::stringstream(matches[2]) >> last_row;
+  std::stringstream(matches[3]) >> film_width;
+
+  math::rgb* rgbs = const_cast<math::rgb*>(
+    reinterpret_cast<const math::rgb*>(message.data + msg.size() + 1)
+  );
+
+  auto pixels = coordinator.get_film()->get_pixels();
+  memcpy(&pixels[first_row * film_width], rgbs, (last_row - first_row + 1) * film_width);
+
+  // send jpeg to client
 }
 
 } }
