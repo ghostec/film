@@ -4,8 +4,9 @@
 #include <sstream>
 #include <thread>
 #include <vector>
-#include <cstdio>
 #include <iostream>
+#include <algorithm>
+#include <iterator>
 #include "worker.h"
 #include "renderer/math/rgb.h"
 #include "network/constants.h"
@@ -59,34 +60,23 @@ void Worker::handle_render_job_message(network::Message message) {
 
 
 void Worker::work(uv_stream_t* handle, size_t first_row, size_t last_row, size_t film_width) {
-  // SET FILM BEFORE!!!! (join?)
-  //std::thread t(&Renderer::render, &renderer, first_row, last_row, film_width);
-  //t.join();
-  renderer.render(first_row, last_row, film_width);
+  std::thread t(&Renderer::render, &renderer, first_row, last_row, film_width);
+  t.join();
   
-  const auto pixels = renderer.get_film()->get_pixels();
+  const auto& pixels = renderer.get_film()->get_pixels();
   const char* bytes = reinterpret_cast<const char*>(&pixels[0]);
-  auto size_of_bytes = sizeof(pixels);
+  auto size_of_bytes = sizeof(math::rgb) * pixels.size();
 
   char buffer[100];
   sprintf(buffer, "%s %zu %zu %zu", network::RENDER_JOB_RESULT_MESSAGE, first_row, last_row, film_width);
 
   auto v_bytes = new char[strlen(buffer) + 1 + size_of_bytes];
-  memcpy(v_bytes, buffer, strlen(buffer) + 1);
-  memcpy(v_bytes + strlen(buffer) + 1, bytes, size_of_bytes);
-
-  std::string ss(v_bytes);
-  std::smatch matches;
-
-  std::regex_search(ss, matches, network::REGEX_RENDER_JOB_RESULT);
-  std::cout << matches[3] << std::endl;
+  std::copy(buffer, buffer + strlen(buffer) + 1, v_bytes);
+  std::copy(bytes, bytes + size_of_bytes, v_bytes + strlen(buffer) + 1);
 
   network::write({
     .handle = handle, .data = v_bytes, .length = size_of_bytes + strlen(buffer) + 1
   });
-
-  math::rgb* rgbs = reinterpret_cast<math::rgb*>(v_bytes + ss.size() + 1);
-  std::cout << rgbs[1].r << " " << rgbs[1].g << std::endl;
 
   //delete v_bytes;
 }

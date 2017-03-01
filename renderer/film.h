@@ -10,7 +10,7 @@ class Film {
 public:
   Film(size_t width, size_t height);
   ~Film();
-  math::rgb operator[](size_t i);
+  math::rgb& operator[](size_t i);
   size_t get_width();
   size_t get_height();
   std::vector<math::rgb>& get_pixels();

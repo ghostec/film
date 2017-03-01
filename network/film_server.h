@@ -23,6 +23,7 @@ private:
   void handle_client_message(Message message);
   void handle_render_job_result_message(Message message);
   void send_jpeg();
+  void send_job(uv_stream_t* handle);
 };
 
 } }

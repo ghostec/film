@@ -8,7 +8,7 @@ Film::Film(size_t width, size_t height) :
 
 Film::~Film() {}
 
-math::rgb Film::operator[](size_t i) {
+math::rgb& Film::operator[](size_t i) {
   return pixels[i];
 }
 
