@@ -22,6 +22,7 @@ private:
   void handle_worker_message(Message message);
   void handle_client_message(Message message);
   void handle_render_job_result_message(Message message);
+  void send_jpeg();
 };
 
 } }

@@ -2,6 +2,7 @@
 #include <functional>
 #include <mutex>
 #include <uv.h>
+#include <Magick++.h>
 #include "film.h"
 #include "film-network/write.h"
 #include "network/film_server.h"
@@ -9,6 +10,8 @@
 #include "renderer/worker.h"
 
 int main(int argc, char **argv) {
+  Magick::InitializeMagick(*argv);
+
   auto server = new film::network::FilmServer();
   server->start("0.0.0.0", 3001);
 

@@ -2,6 +2,7 @@
 #include <regex>
 #include <sstream>
 #include <iostream>
+#include <Magick++.h>
 #include "film_server.h"
 #include "constants.h"
 #include "film-network/write.h"
@@ -23,7 +24,7 @@ void FilmServer::handle_client_message(Message message) {
   
   client = message.handle;
 
-  // send jpeg to client
+  send_jpeg();
 }
 
 
@@ -63,7 +64,39 @@ void FilmServer::handle_render_job_result_message(Message message) {
   auto pixels = coordinator.get_film()->get_pixels();
   memcpy(&pixels[first_row * film_width], rgbs, (last_row - first_row + 1) * film_width);
 
-  // send jpeg to client
+  const auto film = coordinator.get_film();
+  Magick::Image im(film->get_width(), film->get_height(), "RGB", Magick::StorageType::FloatPixel, (void*) &pixels[0]);
+  im.magick("JPEG");
+
+  Magick::Blob jpeg;
+  im.write(&jpeg);
+
+  auto buf = new char[jpeg.length()];
+  memcpy(buf, jpeg.data(), jpeg.length());
+
+  send_jpeg(); 
+}
+
+void FilmServer::send_jpeg() {
+  const auto pixels = coordinator.get_film()->get_pixels();
+  const auto film = coordinator.get_film();
+
+  Magick::Image im(film->get_width(), film->get_height(), "RGB",
+    Magick::StorageType::FloatPixel, (void*) &pixels[0]);
+  
+  Magick::Blob jpeg;
+
+  im.magick("JPEG");
+  im.write(&jpeg);
+
+  auto buf = new char[jpeg.length()];
+  memcpy(buf, jpeg.data(), jpeg.length());
+
+  network::write({
+    .handle = client,
+    .data = buf,
+    .length = jpeg.length()
+  });
 }
 
 } }
