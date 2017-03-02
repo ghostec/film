@@ -27,6 +27,10 @@ public:
   float average() const;
 };
 
+inline rgb operator*(float a, rgb _rgb) {
+  return _rgb * a;
+}
+
 } }
 
 #endif
