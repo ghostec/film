@@ -13,7 +13,6 @@ Camera::Camera(math::point3 look_from, math::point3 look_at, math::vec3 up,
   w = (look_from - look_at).hat();
   u = (up ^ w).hat();
   v = w ^ u;
-  //lower_left_corner = math::vec3(-half_width, -half_height, -1);
   lower_left_corner = origin - half_width * u - half_height * v - w;
   horizontal = 2 * half_width * u;
   vertical = 2 * half_height * v;
