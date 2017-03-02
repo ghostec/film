@@ -1,5 +1,5 @@
-#ifndef RENDERER_MATH_RGBH
-#define RENDERER_MATH_RGBH
+#ifndef MATH_RGBH
+#define MATH_RGBH
 
 namespace film { namespace math {
 

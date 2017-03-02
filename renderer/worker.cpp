@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <iterator>
 #include "worker.h"
-#include "renderer/math/rgb.h"
+#include "math/rgb.h"
 #include "network/constants.h"
 #include "film-network/write.h"
 #include "film-network/server.h"
