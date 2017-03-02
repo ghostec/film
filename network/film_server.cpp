@@ -73,13 +73,14 @@ void FilmServer::send_jpeg() {
   im.magick("JPEG");
   im.write(&jpeg);
 
-  auto buf = new char[jpeg.length()];
-  std::memcpy(buf, jpeg.data(), jpeg.length());
+  auto buf = new char[strlen(FRAME_MESSAGE) + 1 + jpeg.length()];
+  std::copy(FRAME_MESSAGE, FRAME_MESSAGE + strlen(FRAME_MESSAGE) + 1, buf);
+  std::memcpy(buf + strlen(FRAME_MESSAGE) + 1, jpeg.data(), jpeg.length());
 
   network::write({
     .handle = client,
     .data = buf,
-    .length = jpeg.length()
+    .length = strlen(FRAME_MESSAGE) + 1 + jpeg.length()
   });
 }
 
