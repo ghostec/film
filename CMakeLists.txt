@@ -9,10 +9,11 @@ include_directories(./ ./deps ${GraphicsMagick++_INCLUDE_DIRS})
 add_subdirectory(deps/film-network)
 add_subdirectory(math)
 add_subdirectory(hitable)
+add_subdirectory(camera)
 add_subdirectory(renderer)
 add_subdirectory(network)
 
-set(LIBRARIES Film_Network Math Hitable Renderer Network)
+set(LIBRARIES Film_Network Math Camera Hitable Renderer Network)
 
 add_executable(film main.cpp film.cpp)
 target_link_libraries(film ${LIBRARIES} ${GraphicsMagick++_LIBRARIES})

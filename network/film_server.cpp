@@ -12,7 +12,7 @@
 namespace film { namespace network {
 
 FilmServer::FilmServer() : client(nullptr), Server() {
-  auto film = new renderer::Film(200, 100);
+  auto film = new renderer::Film(800, 600);
   coordinator.set_film(film);
   register_observer(std::bind(&FilmServer::handle_worker_message, this, std::placeholders::_1));
   register_observer(std::bind(&FilmServer::handle_client_message, this, std::placeholders::_1));
