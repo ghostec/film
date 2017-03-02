@@ -16,7 +16,7 @@ ray& ray::operator=(const ray& rhs) {
   return *this;
 }
 
-point3 ray::point_at_parameter(float t) {
+point3 ray::point_at_parameter(float t) const {
   return origin + t * direction;
 }
 

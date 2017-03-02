@@ -12,7 +12,7 @@
 namespace film { namespace network {
 
 FilmServer::FilmServer() : client(nullptr), Server() {
-  auto film = new renderer::Film(800, 600);
+  auto film = new renderer::Film(200, 100);
   coordinator.set_film(film);
   register_observer(std::bind(&FilmServer::handle_worker_message, this, std::placeholders::_1));
   register_observer(std::bind(&FilmServer::handle_client_message, this, std::placeholders::_1));
@@ -70,6 +70,7 @@ void FilmServer::send_jpeg() {
   
   Magick::Blob jpeg;
 
+  im.quality(90);
   im.magick("JPEG");
   im.write(&jpeg);
 
@@ -89,7 +90,7 @@ void FilmServer::send_job(uv_stream_t* handle) {
 
   auto film = coordinator.get_film();
   auto job = coordinator.next_job();
-  sprintf(buffer, "%s %d %d %zu", RENDER_JOB_MESSAGE, job.first_row, job.last_row, film->get_width());
+  sprintf(buffer, "%s %d %d %zu %zu", RENDER_JOB_MESSAGE, job.first_row, job.last_row, film->get_width(), film->get_height());
   printf("%s\n", buffer);
 
   network::write({

@@ -48,19 +48,20 @@ void Worker::handle_render_job_message(network::Message message) {
   if (!std::regex_search(msg, matches, network::REGEX_RENDER_JOB)) return;
 
   int first_row, last_row;
-  size_t film_width;
+  size_t film_width, film_height;
   std::stringstream(matches[1]) >> first_row;
   std::stringstream(matches[2]) >> last_row;
   std::stringstream(matches[3]) >> film_width;
+  std::stringstream(matches[4]) >> film_height;
 
   if (first_row == -1 || last_row == -1) return;
 
-  work(message.handle, first_row, last_row, film_width);
+  work(message.handle, first_row, last_row, film_width, film_height);
 }
 
 
-void Worker::work(uv_stream_t* handle, size_t first_row, size_t last_row, size_t film_width) {
-  std::thread t(&Renderer::render, &renderer, first_row, last_row, film_width);
+void Worker::work(uv_stream_t* handle, size_t first_row, size_t last_row, size_t film_width, size_t film_height) {
+  std::thread t(&Renderer::render, &renderer, first_row, last_row, film_width, film_height);
   t.join();
   
   const auto& pixels = renderer.get_film()->get_pixels();

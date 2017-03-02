@@ -16,7 +16,7 @@ public:
   ray(const ray& _ray);
   ~ray();
   ray& operator=(const ray& rhs);
-  point3 point_at_parameter(float t);
+  point3 point_at_parameter(float t) const;
 };
 
 } }
