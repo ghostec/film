@@ -8,8 +8,10 @@ namespace film { namespace network {
 
 static const std::string WORKER = "WORKER";
 static const std::string CLIENT = "CLIENT";
-static const std::regex REGEX_RENDER_JOB("RENDER_JOB (-?[0-9]+) (-?[0-9]+) ([0-9]+) ([0-9]+)");
-static const std::regex REGEX_RENDER_JOB_RESULT("RENDER_JOB_RESULT ([0-9]+) ([0-9]+) ([0-9]+)");
+// frame_id first_row last_row film_width film_height
+static const std::regex REGEX_RENDER_JOB("RENDER_JOB ([0-9]+) (-?[0-9]+) (-?[0-9]+) ([0-9]+) ([0-9]+)");
+// frame_id first_row last_row film_width
+static const std::regex REGEX_RENDER_JOB_RESULT("RENDER_JOB_RESULT ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 static constexpr const char* const CONNECTED_MESSAGE = "CONNECTED";
 static constexpr const char* const REGISTER_WORKER_MESSAGE = "WORKER";
 static constexpr const char* const REGISTER_CLIENT_MESSAGE = "CLIENT";

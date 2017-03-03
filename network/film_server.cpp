@@ -40,13 +40,19 @@ void FilmServer::handle_render_job_result_message(Message message) {
   std::smatch matches;
   std::string msg(message.data);
 
-  if(!std::regex_search(msg, matches, REGEX_RENDER_JOB_RESULT)) return;
+  if (!std::regex_search(msg, matches, REGEX_RENDER_JOB_RESULT)) return;
 
   size_t first_row, last_row;
-  size_t film_width;
-  std::stringstream(matches[1]) >> first_row;
-  std::stringstream(matches[2]) >> last_row;
-  std::stringstream(matches[3]) >> film_width;
+  size_t frame_id, film_width;
+  std::stringstream(matches[1]) >> frame_id;
+  std::stringstream(matches[2]) >> first_row;
+  std::stringstream(matches[3]) >> last_row;
+  std::stringstream(matches[4]) >> film_width;
+
+  if (frame_id < coordinator.get_frame_id()) {
+    send_job(message.handle);
+    return;
+  }
 
   math::rgb* rgbs = const_cast<math::rgb*>(
     reinterpret_cast<const math::rgb*>(message.data + msg.size() + 1)
@@ -90,7 +96,8 @@ void FilmServer::send_job(uv_stream_t* handle) {
 
   auto film = coordinator.get_film();
   auto job = coordinator.next_job();
-  sprintf(buffer, "%s %d %d %zu %zu", RENDER_JOB_MESSAGE, job.first_row, job.last_row, film->get_width(), film->get_height());
+  sprintf(buffer, "%s %zu %d %d %zu %zu", RENDER_JOB_MESSAGE, job.frame_id,
+    job.first_row, job.last_row, film->get_width(), film->get_height());
   printf("%s\n", buffer);
 
   network::write({

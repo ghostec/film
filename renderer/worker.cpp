@@ -48,19 +48,21 @@ void Worker::handle_render_job_message(network::Message message) {
   if (!std::regex_search(msg, matches, network::REGEX_RENDER_JOB)) return;
 
   int first_row, last_row;
-  size_t film_width, film_height;
-  std::stringstream(matches[1]) >> first_row;
-  std::stringstream(matches[2]) >> last_row;
-  std::stringstream(matches[3]) >> film_width;
-  std::stringstream(matches[4]) >> film_height;
+  size_t frame_id, film_width, film_height;
+  std::stringstream(matches[1]) >> frame_id;
+  std::stringstream(matches[2]) >> first_row;
+  std::stringstream(matches[3]) >> last_row;
+  std::stringstream(matches[4]) >> film_width;
+  std::stringstream(matches[5]) >> film_height;
 
   if (first_row == -1 || last_row == -1) return;
 
-  work(message.handle, first_row, last_row, film_width, film_height);
+  work(message.handle, frame_id, first_row, last_row, film_width, film_height);
 }
 
 
-void Worker::work(uv_stream_t* handle, size_t first_row, size_t last_row, size_t film_width, size_t film_height) {
+void Worker::work(uv_stream_t* handle, size_t frame_id, size_t first_row,
+  size_t last_row, size_t film_width, size_t film_height) {
   std::thread t(&Renderer::render, &renderer, first_row, last_row, film_width, film_height);
   t.join();
   
@@ -69,7 +71,8 @@ void Worker::work(uv_stream_t* handle, size_t first_row, size_t last_row, size_t
   auto size_of_bytes = sizeof(math::rgb) * pixels.size();
 
   char buffer[100];
-  sprintf(buffer, "%s %zu %zu %zu", network::RENDER_JOB_RESULT_MESSAGE, first_row, last_row, film_width);
+  sprintf(buffer, "%s %zu %zu %zu %zu", network::RENDER_JOB_RESULT_MESSAGE,
+    frame_id, first_row, last_row, film_width);
 
   auto v_bytes = new char[strlen(buffer) + 1 + size_of_bytes];
   std::copy(buffer, buffer + strlen(buffer) + 1, v_bytes);
