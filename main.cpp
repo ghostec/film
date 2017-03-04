@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
   server->start("0.0.0.0", 3001);
 
   auto worker = film::renderer::Worker::create("0.0.0.0", 3001);
+  worker->loop();
 
   std::mutex m;
   m.lock();
