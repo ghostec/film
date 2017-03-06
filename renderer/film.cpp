@@ -1,27 +1,26 @@
+#include <mutex>
+#include <utility>
+
 #include "film.h"
 
-namespace film { namespace renderer {
-
-Film::Film(size_t width, size_t height) :
-  pixels(std::vector<math::rgb>(width * height, math::rgb(1.0, 0.0, 0.0))),
-  width(width), height(height) {}
+namespace film {
+Film::Film(size_t width, size_t height)
+    : width(width),
+      height(height),
+      pixels(std::vector<math::rgb>(math::rgb, width * height)) {}
 
 Film::~Film() {}
 
-math::rgb& Film::operator[](size_t i) {
-  return pixels[i];
+void Film::setBlock(math::rgb* pixels, size_t blockSize, size_t toIndex) {
+  std::shared_lock<std::shared_timed_mutex> lock(mutex);
+  std::copy(rgbs, rgbs + blockSize, &pixels[toIndex]);
+  lock.unlock();
 }
 
-size_t Film::get_width() {
-  return width;
+std::vector<math::rgb> Film::pixels() {
+  std::unique_lock<std::shared_timed_mutex> lock(mutex);
+  auto copy(pixels);
+  lock.unlock();
+  return copy;
 }
-
-size_t Film::get_height() {
-  return height;
 }
-
-std::vector<math::rgb>& Film::get_pixels() {
-  return pixels;
-}
-
-} }

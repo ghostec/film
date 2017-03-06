@@ -1,7 +1,8 @@
 #include <cmath>
+
 #include "rgb.h"
 
-namespace film { namespace math {
+namespace film {
 
 rgb::rgb() : r(0), g(0), b(0) {}
 rgb::rgb(float a) : r(a), g(a), b(a) {}
@@ -11,9 +12,11 @@ rgb::rgb(const rgb& _rgb) : r(_rgb.r), g(_rgb.g), b(_rgb.b) {}
 rgb::~rgb() {}
 
 rgb& rgb::operator=(const rgb& rhs) {
-  if(this == &rhs) return *this;
+  if (this == &rhs) return *this;
 
-  r = rhs.r; g = rhs.g; b = rhs.b;
+  r = rhs.r;
+  g = rhs.g;
+  b = rhs.b;
 
   return *this;
 }
@@ -31,23 +34,27 @@ rgb rgb::operator/(const float a) const {
   return rgb(r * inva, g * inva, b * inva);
 }
 
-rgb rgb::operator*(const float a) const {
-  return rgb(r * a, g * a, b * a);
-}
+rgb rgb::operator*(const float a) const { return rgb(r * a, g * a, b * a); }
 
 rgb& rgb::operator/=(const float a) {
   auto inva = 1.0 / a;
-  r *= inva; g *= inva; b *= inva;
+  r *= inva;
+  g *= inva;
+  b *= inva;
   return *this;
 }
 
 rgb& rgb::operator*=(const float a) {
-  r *= a; g *= a; b *= a;
+  r *= a;
+  g *= a;
+  b *= a;
   return *this;
 }
 
 rgb& rgb::operator+=(const rgb& _r) {
-  r += _r.r; g += _r.g; b += _r.b;
+  r += _r.r;
+  g += _r.g;
+  b += _r.b;
   return *this;
 }
 
@@ -55,16 +62,9 @@ rgb rgb::pow(float p) const {
   return rgb(::pow(r, p), ::pow(g, p), ::pow(b, p));
 }
 
-rgb rgb::clamp() const {
-  return rgb(fclamp(r), fclamp(g), fclamp(b));
-}
+rgb rgb::clamp() const { return rgb(fclamp(r), fclamp(g), fclamp(b)); }
 
-float rgb::average() const {
-  return 0.3333333333333 * (r + g + b);
-}
+float rgb::average() const { return 0.3333333333333 * (r + g + b); }
 
-float fclamp(float x) {
-  return x < 0 ? 0 : x > 1 ? 1 : x;
+float fclamp(float x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
 }
-
-} }

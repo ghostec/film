@@ -1,19 +1,10 @@
 cmake_minimum_required(VERSION 3.6)
-project(film)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_PREFIX_PATH "/usr/local/opt/qt5/")
 
-include(FindGraphicsMagick.cmake)
-include_directories(./ ./deps ${GraphicsMagick++_INCLUDE_DIRS})
+include_directories(./)
 
-add_subdirectory(deps/film-network)
-add_subdirectory(math)
-add_subdirectory(hitable)
-add_subdirectory(camera)
-add_subdirectory(renderer)
-add_subdirectory(network)
-
-set(LIBRARIES Film_Network Math Camera Hitable Renderer Network)
-
-add_executable(film main.cpp film.cpp)
-target_link_libraries(film ${LIBRARIES} ${GraphicsMagick++_LIBRARIES})
+include(${target}.cmake)

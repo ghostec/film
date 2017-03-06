@@ -1,24 +1,23 @@
 #ifndef RENDERER_FILMH
 #define RENDERER_FILMH
 
+#include <shared_mutex>
 #include <vector>
+
 #include "math/rgb.h"
 
-namespace film { namespace renderer {
-
+namespace film {
 class Film {
-public:
+ public:
   Film(size_t width, size_t height);
   ~Film();
-  math::rgb& operator[](size_t i);
-  size_t get_width();
-  size_t get_height();
-  std::vector<math::rgb>& get_pixels();
-private:
-  size_t width, height;
+  void setBlock(math::rgb* pixels, size_t blockSize, size_t toIndex);
+  std::vector<math::rgb> pixels();
+
+ private:
+  std::shared_timed_mutex mutex;
   std::vector<math::rgb> pixels;
 };
-
-} }
+}
 
 #endif

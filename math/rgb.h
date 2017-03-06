@@ -1,12 +1,11 @@
 #ifndef MATH_RGBH
 #define MATH_RGBH
 
-namespace film { namespace math {
-
+namespace film {
 float fclamp(float x);
 
 class rgb {
-public:
+ public:
   float r, g, b;
 
   rgb();
@@ -27,10 +26,7 @@ public:
   float average() const;
 };
 
-inline rgb operator*(float a, rgb _rgb) {
-  return _rgb * a;
+inline rgb operator*(float a, rgb _rgb) { return _rgb * a; }
 }
-
-} }
 
 #endif
