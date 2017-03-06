@@ -9,13 +9,17 @@ struct FilmJob {
 
 class FilmJobCoordinator {
  public:
-  FilmJobCoordinator();
+  FilmJobCoordinator(size_t filmWidth, size_t filmHeight);
+  FilmJobCoordinator(const FilmJobCoordinator& c);
+  ~FilmJobCoordinator();
   FilmJob nextJob();
 
  private:
-  quint16 rowStep;
-  quint16 currentRow;
+  size_t filmWidth, filmHeight;
+  quint16 frameId, rowStep, currentRow;
   QMutex mutex;
-}
+
+  FilmJob _nextJob(quint16 lastRow);
+};
 
 #endif
