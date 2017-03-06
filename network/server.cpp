@@ -4,7 +4,8 @@
 #include "network/message_t.h"
 #include "server.h"
 
-Server::Server() {
+namespace film {
+Server::Server() : coordinator(800, 600) {
   connect(&tcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
   connect(this, SIGNAL(filmJobResult(QDataStream*)), this,
           SLOT(handleFilmJobResult(QDataStream*)), Qt::QueuedConnection);
@@ -68,7 +69,9 @@ void Server::sendFilmJob(QTcpSocket* socket) {
   auto dataStream = sockets[socket];
   (*dataStream).startTransaction();
   (*dataStream) << message_t::FILM_JOB;
+  (*dataStream) << coordinator.nextJob();
   (*dataStream).commitTransaction();
+}
 }
 
 #include "moc_server.cpp"

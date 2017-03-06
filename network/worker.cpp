@@ -1,7 +1,13 @@
-#include "worker.h"
 #include <QtDebug>
 
-Worker::Worker() {}
+#include "film_job_t.h"
+#include "worker.h"
+
+namespace film {
+Worker::Worker() {
+  connect(this, SIGNAL(filmJob()), this, SLOT(handleFilmJob()),
+          Qt::QueuedConnection);
+}
 
 void Worker::connectionCb() {
   dataStream.startTransaction();
@@ -10,10 +16,18 @@ void Worker::connectionCb() {
 }
 
 void Worker::handleMessage(const message_t messageType) {
-  if (!dataStream.commitTransaction()) return;
-
   switch (messageType) {
     case message_t::FILM_JOB:
-      qDebug() << "FILM_JOB";
+      return emit filmJob();
   }
 }
+
+void Worker::handleFilmJob() {
+  film_job_t job;
+  dataStream >> job;
+
+  if (!dataStream.commitTransaction()) return;
+}
+}
+
+#include "moc_worker.cpp"

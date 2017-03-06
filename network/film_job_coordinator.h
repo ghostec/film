@@ -1,25 +1,25 @@
-#ifndef FILM_JOB_COORDINATORH
-#define FILM_JOB_COORDINATORH
+#ifndef NETWORK_FILM_JOB_COORDINATORH
+#define NETWORK_FILM_JOB_COORDINATORH
 
 #include <QMutex>
 
-struct FilmJob {
-  quint16 frameId, width, height, firstRow, lastRow;
-};
+#include "film_job_t.h"
 
+namespace film {
 class FilmJobCoordinator {
  public:
   FilmJobCoordinator(size_t filmWidth, size_t filmHeight);
   FilmJobCoordinator(const FilmJobCoordinator& c);
   ~FilmJobCoordinator();
-  FilmJob nextJob();
+  film_job_t nextJob();
 
  private:
   size_t filmWidth, filmHeight;
   quint16 frameId, rowStep, currentRow;
   QMutex mutex;
 
-  FilmJob _nextJob(quint16 lastRow);
+  film_job_t _nextJob(quint16 lastRow);
 };
+}
 
 #endif

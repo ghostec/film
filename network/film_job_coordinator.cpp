@@ -1,5 +1,6 @@
 #include "film_job_coordinator.h"
 
+namespace film {
 FilmJobCoordinator::FilmJobCoordinator(size_t filmWidth, size_t filmHeight)
     : filmWidth(filmWidth),
       filmHeight(filmHeight),
@@ -12,7 +13,7 @@ FilmJobCoordinator::FilmJobCoordinator(const FilmJobCoordinator& c)
 
 FilmJobCoordinator::~FilmJobCoordinator() {}
 
-FilmJob FilmJobCoordinator::_nextJob(quint16 lastRow) {
+film_job_t FilmJobCoordinator::_nextJob(quint16 lastRow) {
   return {.frameId = frameId,
           .width = static_cast<quint16>(filmWidth),
           .height = static_cast<quint16>(filmHeight),
@@ -20,10 +21,10 @@ FilmJob FilmJobCoordinator::_nextJob(quint16 lastRow) {
           .lastRow = lastRow};
 }
 
-FilmJob FilmJobCoordinator::nextJob() {
+film_job_t FilmJobCoordinator::nextJob() {
   mutex.lock();
 
-  FilmJob job;
+  film_job_t job;
 
   if (currentRow >= filmHeight) {
     currentRow = 0;
@@ -39,6 +40,7 @@ FilmJob FilmJobCoordinator::nextJob() {
 
   mutex.unlock();
   return job;
+}
 }
 
 #include "moc_film_job_coordinator.cpp"

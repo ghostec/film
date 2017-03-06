@@ -6,6 +6,9 @@
 #include <QTcpServer>
 #include <QVector>
 
+#include "coordinator.h"
+
+namespace film {
 class Server : public QObject {
   Q_OBJECT
 
@@ -30,8 +33,10 @@ class Server : public QObject {
   QMap<QTcpSocket*, QDataStream*> sockets;
   QVector<QTcpSocket*> workers;
   QTcpSocket* gui;
+  Coordinator coordinator;
 
   void sendFilmJob(QTcpSocket* socket);
 };
+}
 
 #endif
