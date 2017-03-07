@@ -10,6 +10,6 @@ void Scene::setWorld(Hitable* worldPtr) { this->worldPtr = worldPtr; }
 
 void Scene::render(Film* filmPtr, size_t firstRow, size_t lastRow, size_t width,
                    size_t height) {
-  return;
+  cameraPtr->render(filmPtr, worldPtr, firstRow, lastRow, width, height);
 }
 }

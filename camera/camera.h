@@ -1,9 +1,11 @@
 #ifndef CAMERA_CAMERAH
 #define CAMERA_CAMERAH
 
+#include "hitable/hitable.h"
 #include "math/point3.h"
 #include "math/ray.h"
 #include "math/vec3.h"
+#include "renderer/film.h"
 
 namespace film {
 class Camera {
@@ -13,6 +15,8 @@ class Camera {
 
   Camera(point3 look_from, point3 look_at, vec3 up, float vfov, float aspect);
   ray getRay(float u, float v);
+  void render(Film* filmPtr, Hitable* worldPtr, size_t firstRow, size_t lastRow,
+              size_t width, size_t height);
 };
 }
 

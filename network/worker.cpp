@@ -5,7 +5,7 @@
 #include "worker.h"
 
 namespace film {
-Worker::Worker() {
+Worker::Worker() : scenePtr(nullptr) {
   connect(this, SIGNAL(filmJob()), this, SLOT(handleFilmJob()),
           Qt::QueuedConnection);
 }
