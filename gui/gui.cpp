@@ -33,7 +33,9 @@ void GUI::handleFrame() {
 
   if (!dataStream.commitTransaction()) return;
 
-  qDebug() << "GUI FRAME";
+  auto image = QImage::fromData(bytes);
+  auto pixmapItemPtr = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+  setPixmapItem(pixmapItemPtr);
 }
 
 void GUI::setPixmapItem(QGraphicsPixmapItem* pixmapItemPtr) {
