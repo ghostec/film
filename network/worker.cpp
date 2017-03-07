@@ -1,6 +1,7 @@
+#include <QVector>
 #include <QtDebug>
 
-#include "film_job_t.h"
+#include "qdatastream.h"
 #include "worker.h"
 
 namespace film {
@@ -8,6 +9,8 @@ Worker::Worker() {
   connect(this, SIGNAL(filmJob()), this, SLOT(handleFilmJob()),
           Qt::QueuedConnection);
 }
+
+void Worker::setScene(Scene* scenePtr) { this->scenePtr = scenePtr; }
 
 void Worker::connectionCb() {
   dataStream.startTransaction();
@@ -27,6 +30,18 @@ void Worker::handleFilmJob() {
   dataStream >> job;
 
   if (!dataStream.commitTransaction()) return;
+
+  auto filmPtr =
+      new Film((size_t)job.width, (size_t)job.lastRow - job.firstRow + 1);
+  scenePtr->render(filmPtr, job.firstRow, job.lastRow, job.width, job.height);
+  sendFilmJobResult(filmPtr, job);
+}
+
+void Worker::sendFilmJobResult(Film* filmPtr, film_job_t filmJob) {
+  dataStream.startTransaction();
+  dataStream << message_t::FILM_JOB_RESULT << filmJob;
+  dataStream << QVector<rgb>::fromStdVector(filmPtr->getPixels());
+  dataStream.commitTransaction();
 }
 }
 

@@ -17,6 +17,7 @@ class Film {
  private:
   std::shared_timed_mutex mutex;
   std::vector<rgb> pixels;
+  size_t width, height;
 };
 }
 

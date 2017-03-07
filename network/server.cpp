@@ -56,13 +56,13 @@ void Server::handleRegisterWorker(QTcpSocket* socket) {
 void Server::handleRegisterGUI(QTcpSocket* socket) { gui = socket; }
 
 void Server::handleFilmJobResult(QDataStream* dataStreamPtr) {
-  QString str;
-  (*dataStreamPtr) >> str;
+  film_job_t job;
+  (*dataStreamPtr) >> job;
 
   if (!dataStreamPtr->commitTransaction()) return;
 
   qDebug() << "[Server] New message:";
-  qDebug() << str;
+  qDebug() << job.width;
 }
 
 void Server::sendFilmJob(QTcpSocket* socket) {
