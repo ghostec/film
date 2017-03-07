@@ -1,4 +1,5 @@
 #include "coordinator.h"
+#include <QtDebug>
 
 namespace film {
 Coordinator::Coordinator(size_t filmWidth, size_t filmHeight)
@@ -16,13 +17,14 @@ film_job_t Coordinator::nextJob() {
   if (job.lastRow == filmHeight - 1) {  // last job for that frame
     frameCoordinator.hasSentAllJobs(job.frameId);
   }
-  frameCoordinator.jobSent(job.frameId);
+  frameCoordinator.filmJobSent(job.frameId);
   return job;
 }
 
-void Coordinator::jobReceived(quint16 frameId) {
-  frameCoordinator.jobReceived(frameId);
-  if (frameCoordinator.frameDone(frameId)) {
+void Coordinator::filmJobReceived(film_job_t job, std::vector<rgb> pixels) {
+  frameCoordinator.filmJobReceived(job, pixels);
+  if (frameCoordinator.frameDone(job.frameId)) {
+    qDebug() << "FRAME DONE";
     // emit frameDone signal to Server sendFrame slot
   }
 }

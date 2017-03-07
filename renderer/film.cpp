@@ -9,16 +9,9 @@ Film::Film(size_t width, size_t height)
 
 Film::~Film() {}
 
-void Film::setBlock(rgb* pixels, size_t blockSize, size_t toIndex) {
-  std::shared_lock<std::shared_timed_mutex> lock(mutex);
-  std::copy(pixels, pixels + blockSize, &this->pixels[toIndex]);
-  lock.unlock();
+void Film::setBlock(const std::vector<rgb> pixels, size_t toIndex) {
+  std::copy(&pixels[0], &pixels[0] + pixels.size(), &this->pixels[toIndex]);
 }
 
-std::vector<rgb> Film::getPixels() {
-  std::unique_lock<std::shared_timed_mutex> lock(mutex);
-  auto copy(pixels);
-  lock.unlock();
-  return copy;
-}
+std::vector<rgb> Film::getPixels() const { return pixels; }
 }

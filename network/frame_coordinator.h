@@ -2,24 +2,29 @@
 #define NETWORK_FRAME_COORDINATORH
 
 #include <QMap>
+
+#include "film_job_t.h"
 #include "renderer/film.h"
 
 namespace film {
 struct frame_t {
   bool hasSentAllJobs;
   quint16 jobsReceived, jobsTotal;
-  Film* film;
+  Film* filmPtr;
 
   frame_t()
-      : hasSentAllJobs(false), jobsTotal(0), jobsReceived(0), film(nullptr) {}
+      : hasSentAllJobs(false),
+        jobsTotal(0),
+        jobsReceived(0),
+        filmPtr(nullptr) {}
 };
 
 class FrameCoordinator {
  public:
   FrameCoordinator();
   ~FrameCoordinator();
-  void jobSent(quint16 frameId);
-  void jobReceived(quint16 frameId);
+  void filmJobSent(quint16 frameId);
+  void filmJobReceived(film_job_t job, std::vector<rgb> pixels);
   void hasSentAllJobs(quint16 frameId);
   bool frameDone(quint16 frameId);
   Film* getFilm(quint16 frameId);

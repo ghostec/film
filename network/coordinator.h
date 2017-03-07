@@ -1,6 +1,8 @@
 #ifndef NETWORK_COORDINATORH
 #define NETWORK_COORDINATORH
 
+#include <vector>
+
 #include "film_job_coordinator.h"
 #include "frame_coordinator.h"
 
@@ -10,7 +12,7 @@ class Coordinator {
   Coordinator(size_t filmWidth, size_t filmHeight);
   ~Coordinator();
   film_job_t nextJob();
-  void jobReceived(quint16 frameId);
+  void filmJobReceived(film_job_t job, std::vector<rgb> pixels);
 
  private:
   size_t filmWidth, filmHeight;

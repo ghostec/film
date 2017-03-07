@@ -38,10 +38,8 @@ void Worker::handleFilmJob() {
 }
 
 void Worker::sendFilmJobResult(Film* filmPtr, film_job_t filmJob) {
-  dataStream.startTransaction();
   dataStream << message_t::FILM_JOB_RESULT << filmJob;
   dataStream << QVector<rgb>::fromStdVector(filmPtr->getPixels());
-  dataStream.commitTransaction();
 }
 }
 

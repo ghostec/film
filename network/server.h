@@ -35,7 +35,7 @@ class Server : public QObject {
   QTcpSocket* gui;
   Coordinator coordinator;
 
-  void sendFilmJob(QTcpSocket* socket);
+  void sendFilmJob(QDataStream* dataStreamPtr);
 };
 }
 

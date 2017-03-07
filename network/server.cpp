@@ -1,12 +1,16 @@
+#include <QVector>
 #include <QtDebug>
 #include <QtNetwork>
+#include <vector>
 
-#include "network/message_t.h"
+#include "message_t.h"
+#include "qdatastream.h"
 #include "server.h"
 
 namespace film {
 Server::Server() : coordinator(800, 600) {
-  connect(&tcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
+  connect(&tcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()),
+          Qt::QueuedConnection);
   connect(this, SIGNAL(filmJobResult(QDataStream*)), this,
           SLOT(handleFilmJobResult(QDataStream*)), Qt::QueuedConnection);
   connect(this, SIGNAL(registerGUI(QTcpSocket*)), this,
@@ -21,7 +25,8 @@ void Server::listen(QHostAddress addr, quint16 port) {
 
 void Server::acceptConnection() {
   auto socket = tcpServer.nextPendingConnection();
-  connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
+  connect(socket, SIGNAL(readyRead()), this, SLOT(read()),
+          Qt::QueuedConnection);
 
   // save QDataStream object to QMap `clients` member
   auto dataStreamPtr = new QDataStream(socket);
@@ -34,6 +39,7 @@ void Server::read() {
   auto dataStreamPtr = sockets[socketPtr];
 
   dataStreamPtr->startTransaction();
+  // remember to commitTransaction at each handler
 
   message_t messageType;
   (*dataStreamPtr) >> messageType;
@@ -49,28 +55,29 @@ void Server::read() {
 }
 
 void Server::handleRegisterWorker(QTcpSocket* socket) {
+  if (!sockets[socket]->commitTransaction()) return;
   workers.append(socket);
-  sendFilmJob(socket);
+  sendFilmJob(sockets[socket]);
 }
 
 void Server::handleRegisterGUI(QTcpSocket* socket) { gui = socket; }
 
 void Server::handleFilmJobResult(QDataStream* dataStreamPtr) {
   film_job_t job;
-  (*dataStreamPtr) >> job;
+  QVector<rgb> qPixels;
+
+  (*dataStreamPtr) >> job >> qPixels;
 
   if (!dataStreamPtr->commitTransaction()) return;
 
-  qDebug() << "[Server] New message:";
-  qDebug() << job.width;
+  sendFilmJob(dataStreamPtr);
 }
 
-void Server::sendFilmJob(QTcpSocket* socket) {
-  auto dataStream = sockets[socket];
-  (*dataStream).startTransaction();
-  (*dataStream) << message_t::FILM_JOB;
-  (*dataStream) << coordinator.nextJob();
-  (*dataStream).commitTransaction();
+void Server::sendFilmJob(QDataStream* dataStreamPtr) {
+  (*dataStreamPtr).startTransaction();
+  (*dataStreamPtr) << message_t::FILM_JOB;
+  (*dataStreamPtr) << coordinator.nextJob();
+  (*dataStreamPtr).commitTransaction();
 }
 }
 

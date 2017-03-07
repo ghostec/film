@@ -4,17 +4,19 @@ namespace film {
 FrameCoordinator::FrameCoordinator() {}
 FrameCoordinator::~FrameCoordinator() {}
 
-void FrameCoordinator::jobSent(quint16 frameId) {
+void FrameCoordinator::filmJobSent(quint16 frameId) {
   mutex.lock();
   auto& frame = frames[frameId];
   frame.jobsTotal += 1;
   mutex.unlock();
 }
 
-void FrameCoordinator::jobReceived(quint16 frameId) {
+void FrameCoordinator::filmJobReceived(film_job_t job,
+                                       std::vector<rgb> pixels) {
   mutex.lock();
-  auto& frame = frames[frameId];
+  auto& frame = frames[job.frameId];
   frame.jobsReceived += 1;
+  frame.filmPtr->setBlock(std::move(pixels), job.width * job.firstRow);
   mutex.unlock();
 }
 
@@ -35,6 +37,6 @@ bool FrameCoordinator::frameDone(quint16 frameId) {
 }
 
 Film* FrameCoordinator::getFilm(quint16 frameId) {
-  return frames[frameId].film;
+  return frames[frameId].filmPtr;
 }
 }
