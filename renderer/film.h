@@ -12,6 +12,8 @@ class Film {
   ~Film();
   void setBlock(const std::vector<rgb> pixels, size_t toIndex);
   std::vector<rgb> getPixels() const;
+  size_t getWidth();
+  size_t getHeight();
 
  private:
   std::vector<rgb> pixels;

@@ -1,34 +1,40 @@
 #include "frame_coordinator.h"
 
 namespace film {
-FrameCoordinator::FrameCoordinator() {}
+FrameCoordinator::FrameCoordinator(size_t filmWidth, size_t filmHeight)
+    : filmWidth(filmWidth), filmHeight(filmHeight) {}
 FrameCoordinator::~FrameCoordinator() {}
 
-void FrameCoordinator::filmJobSent(quint16 frameId) {
+frame_t& FrameCoordinator::findOrInitialize(const quint16 frameId) {
+  if (frames.contains(frameId)) return frames.find(frameId).value();
+  return frames.insert(frameId, frame_t(filmWidth, filmHeight)).value();
+}
+
+void FrameCoordinator::filmJobSent(const quint16 frameId) {
   mutex.lock();
-  auto& frame = frames[frameId];
+  auto& frame = findOrInitialize(frameId);
   frame.jobsTotal += 1;
   mutex.unlock();
 }
 
-void FrameCoordinator::filmJobReceived(film_job_t job,
+void FrameCoordinator::filmJobReceived(const film_job_t job,
                                        std::vector<rgb> pixels) {
   mutex.lock();
-  auto& frame = frames[job.frameId];
+  auto& frame = findOrInitialize(job.frameId);
   frame.jobsReceived += 1;
   frame.filmPtr->setBlock(std::move(pixels), job.width * job.firstRow);
   mutex.unlock();
 }
 
-void FrameCoordinator::hasSentAllJobs(quint16 frameId) {
+void FrameCoordinator::hasSentAllJobs(const quint16 frameId) {
   mutex.lock();
-  frames[frameId].hasSentAllJobs = true;
+  findOrInitialize(frameId).hasSentAllJobs = true;
   mutex.unlock();
 }
 
-bool FrameCoordinator::frameDone(quint16 frameId) {
+bool FrameCoordinator::isFrameDone(const quint16 frameId) {
   mutex.lock();
-  auto& frame = frames[frameId];
+  auto& frame = findOrInitialize(frameId);
   auto ret = ((frame.hasSentAllJobs && (frame.jobsTotal == frame.jobsReceived))
                   ? true
                   : false);
@@ -36,7 +42,7 @@ bool FrameCoordinator::frameDone(quint16 frameId) {
   return ret;
 }
 
-Film* FrameCoordinator::getFilm(quint16 frameId) {
-  return frames[frameId].filmPtr;
+Film* FrameCoordinator::getFilm(const quint16 frameId) {
+  return findOrInitialize(frameId).filmPtr;
 }
 }

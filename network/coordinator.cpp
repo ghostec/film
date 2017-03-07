@@ -5,7 +5,8 @@ namespace film {
 Coordinator::Coordinator(size_t filmWidth, size_t filmHeight)
     : filmWidth(filmWidth),
       filmHeight(filmHeight),
-      filmJobCoordinator(filmWidth, filmHeight) {}
+      filmJobCoordinator(filmWidth, filmHeight),
+      frameCoordinator(filmWidth, filmHeight) {}
 
 Coordinator::~Coordinator() {}
 
@@ -23,9 +24,10 @@ film_job_t Coordinator::nextJob() {
 
 void Coordinator::filmJobReceived(film_job_t job, std::vector<rgb> pixels) {
   frameCoordinator.filmJobReceived(job, pixels);
-  if (frameCoordinator.frameDone(job.frameId)) {
-    qDebug() << "FRAME DONE";
-    // emit frameDone signal to Server sendFrame slot
+  if (frameCoordinator.isFrameDone(job.frameId)) {
+    emit frameDone(frameCoordinator.getFilm(job.frameId));
   }
 }
 }
+
+#include "moc_coordinator.cpp"

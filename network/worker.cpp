@@ -12,11 +12,7 @@ Worker::Worker() {
 
 void Worker::setScene(Scene* scenePtr) { this->scenePtr = scenePtr; }
 
-void Worker::connectionCb() {
-  dataStream.startTransaction();
-  dataStream << message_t::REGISTER_WORKER;
-  dataStream.commitTransaction();
-}
+void Worker::connectionCb() { dataStream << message_t::REGISTER_WORKER; }
 
 void Worker::handleMessage(const message_t messageType) {
   switch (messageType) {

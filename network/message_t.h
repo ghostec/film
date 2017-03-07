@@ -7,7 +7,8 @@ enum class message_t : quint16 {
   REGISTER_WORKER,
   REGISTER_GUI,
   FILM_JOB,
-  FILM_JOB_RESULT
+  FILM_JOB_RESULT,
+  FRAME
 };
 
 inline QDataStream& operator<<(QDataStream& stream, const message_t& type) {

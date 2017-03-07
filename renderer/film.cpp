@@ -14,4 +14,8 @@ void Film::setBlock(const std::vector<rgb> pixels, size_t toIndex) {
 }
 
 std::vector<rgb> Film::getPixels() const { return pixels; }
+
+size_t Film::getWidth() { return width; }
+
+size_t Film::getHeight() { return height; }
 }

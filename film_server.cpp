@@ -1,8 +1,10 @@
+#include <Magick++.h>
 #include <QtCore>
 
 #include "network/server.h"
 
 int main(int argc, char *argv[]) {
+  Magick::InitializeMagick(*argv);
   QCoreApplication app(argc, argv);
 
   film::Server server;

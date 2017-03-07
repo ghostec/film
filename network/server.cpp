@@ -1,6 +1,8 @@
+#include <Magick++.h>
 #include <QVector>
 #include <QtDebug>
 #include <QtNetwork>
+#include <utility>
 #include <vector>
 
 #include "message_t.h"
@@ -8,9 +10,11 @@
 #include "server.h"
 
 namespace film {
-Server::Server() : coordinator(800, 600) {
+Server::Server() : coordinator(800, 600), gui(nullptr) {
   connect(&tcpServer, SIGNAL(newConnection()), this, SLOT(acceptConnection()),
           Qt::QueuedConnection);
+  connect(&coordinator, SIGNAL(frameDone(Film*)), this,
+          SLOT(handleFrame(Film*)), Qt::QueuedConnection);
   connect(this, SIGNAL(filmJobResult(QDataStream*)), this,
           SLOT(handleFilmJobResult(QDataStream*)), Qt::QueuedConnection);
   connect(this, SIGNAL(registerGUI(QTcpSocket*)), this,
@@ -70,14 +74,31 @@ void Server::handleFilmJobResult(QDataStream* dataStreamPtr) {
 
   if (!dataStreamPtr->commitTransaction()) return;
 
+  coordinator.filmJobReceived(job, std::move(qPixels.toStdVector()));
   sendFilmJob(dataStreamPtr);
 }
 
+void Server::handleFrame(Film* filmPtr) {
+  if (!gui) return;
+
+  QDataStream out(gui);
+  out.setVersion(QDataStream::Qt_4_0);
+
+  Magick::Image im(filmPtr->getWidth(), filmPtr->getHeight(), "RGB",
+                   Magick::StorageType::FloatPixel,
+                   (void*)&filmPtr->getPixels()[0]);
+  im.magick("JPEG");
+
+  Magick::Blob jpeg;
+  im.write(&jpeg);
+
+  QByteArray bytes((char*)jpeg.data(), jpeg.length());
+  out << message_t::FRAME << bytes;
+}
+
 void Server::sendFilmJob(QDataStream* dataStreamPtr) {
-  (*dataStreamPtr).startTransaction();
   (*dataStreamPtr) << message_t::FILM_JOB;
   (*dataStreamPtr) << coordinator.nextJob();
-  (*dataStreamPtr).commitTransaction();
 }
 }
 
