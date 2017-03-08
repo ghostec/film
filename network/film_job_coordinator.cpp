@@ -13,7 +13,7 @@ FilmJobCoordinator::FilmJobCoordinator(const FilmJobCoordinator& c)
 
 FilmJobCoordinator::~FilmJobCoordinator() {}
 
-film_job_t FilmJobCoordinator::_nextJob(quint16 lastRow) {
+film_job_t FilmJobCoordinator::_nextFilmJob(quint16 lastRow) {
   return {.frameId = frameId,
           .width = static_cast<quint16>(filmWidth),
           .height = static_cast<quint16>(filmHeight),
@@ -21,7 +21,7 @@ film_job_t FilmJobCoordinator::_nextJob(quint16 lastRow) {
           .lastRow = lastRow};
 }
 
-film_job_t FilmJobCoordinator::nextJob() {
+film_job_t FilmJobCoordinator::nextFilmJob() {
   mutex.lock();
 
   film_job_t job;
@@ -29,11 +29,11 @@ film_job_t FilmJobCoordinator::nextJob() {
   if (currentRow >= filmHeight) {
     currentRow = 0;
     frameId += 1;
-    job = _nextJob(currentRow + rowStep);
+    job = _nextFilmJob(currentRow + rowStep);
   } else if (currentRow + rowStep >= filmHeight) {
-    job = _nextJob(filmHeight - 1);
+    job = _nextFilmJob(filmHeight - 1);
   } else {
-    job = _nextJob(currentRow + rowStep);
+    job = _nextFilmJob(currentRow + rowStep);
   }
 
   currentRow += rowStep;

@@ -11,14 +11,14 @@ class FilmJobCoordinator {
   FilmJobCoordinator(size_t filmWidth, size_t filmHeight);
   FilmJobCoordinator(const FilmJobCoordinator& c);
   ~FilmJobCoordinator();
-  film_job_t nextJob();
+  film_job_t nextFilmJob();
 
  private:
   size_t filmWidth, filmHeight;
   quint16 frameId, rowStep, currentRow;
   QMutex mutex;
 
-  film_job_t _nextJob(quint16 lastRow);
+  film_job_t _nextFilmJob(quint16 lastRow);
 };
 }
 

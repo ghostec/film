@@ -15,11 +15,11 @@ film_job_t Coordinator::nextFilmJob() {
   std::unique_lock<std::mutex> lock(mutex);
   while (waiting) cv.wait(lock);
 
-  auto job = filmJobCoordinator.nextJob();
+  auto job = filmJobCoordinator.nextFilmJob();
   frameCoordinator.filmJobSent(job.frameId);
   if (job.lastRow == filmHeight - 1) {  // last job for that frame
     frameCoordinator.hasSentAllJobs(job.frameId);
-    // lock Coordinator from calling nextJob until Server updates Scene
+    // lock Coordinator from calling nextFilmJob until Server updates Scene
     waiting = true;
     emit allFilmJobsSentForCurrentFrame();
   }
