@@ -3,23 +3,32 @@
 
 namespace film {
 Coordinator::Coordinator(size_t filmWidth, size_t filmHeight)
-    : filmWidth(filmWidth),
+    : waiting(false),
+      filmWidth(filmWidth),
       filmHeight(filmHeight),
       filmJobCoordinator(filmWidth, filmHeight),
       frameCoordinator(filmWidth, filmHeight) {}
 
 Coordinator::~Coordinator() {}
 
-film_job_t Coordinator::nextJob() {
-  // Get Job and create new frame if necessary
-  // Another function to update frame status on FrameCoordinator
+film_job_t Coordinator::nextFilmJob() {
+  std::unique_lock<std::mutex> lock(mutex);
+  while (waiting) cv.wait(lock);
 
   auto job = filmJobCoordinator.nextJob();
+  frameCoordinator.filmJobSent(job.frameId);
   if (job.lastRow == filmHeight - 1) {  // last job for that frame
     frameCoordinator.hasSentAllJobs(job.frameId);
+    // lock Coordinator from calling nextJob until Server updates Scene
+    waiting = true;
+    emit allFilmJobsSentForCurrentFrame();
   }
-  frameCoordinator.filmJobSent(job.frameId);
   return job;
+}
+
+void Coordinator::proceedWithFilmJobs() {
+  waiting = false;
+  cv.notify_all();
 }
 
 void Coordinator::filmJobReceived(film_job_t job, std::vector<rgb> pixels) {

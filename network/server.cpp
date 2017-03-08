@@ -16,6 +16,8 @@ Server::Server() : coordinator(800, 600), gui(nullptr) {
           Qt::QueuedConnection);
   connect(&coordinator, SIGNAL(frameDone(Film*)), this,
           SLOT(handleFrame(Film*)), Qt::QueuedConnection);
+  connect(&coordinator, SIGNAL(allFilmJobsSentForCurrentFrame()), this,
+          SLOT(updateScene()), Qt::QueuedConnection);
   connect(this, SIGNAL(filmJobResult(QDataStream*)), this,
           SLOT(handleFilmJobResult(QDataStream*)), Qt::QueuedConnection);
   connect(this, SIGNAL(registerGUI(QTcpSocket*)), this,
@@ -29,6 +31,8 @@ void Server::listen(QHostAddress addr, quint16 port) {
 }
 
 void Server::setScene(Scene* scenePtr) { this->scenePtr = scenePtr; }
+
+void Server::updateScene() { coordinator.proceedWithFilmJobs(); }
 
 void Server::sendSceneToWorkers() {
   QByteArray bytes;
@@ -112,7 +116,7 @@ void Server::handleFrame(Film* filmPtr) {
 
 void Server::sendFilmJob(QDataStream* dataStreamPtr) {
   (*dataStreamPtr) << message_t::FILM_JOB;
-  (*dataStreamPtr) << coordinator.nextJob();
+  (*dataStreamPtr) << coordinator.nextFilmJob();
 }
 }
 

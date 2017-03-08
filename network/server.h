@@ -26,6 +26,7 @@ class Server : public QObject {
   void handleRegisterGUI(QTcpSocket* socket);
   void handleRegisterWorker(QTcpSocket* socket);
   void handleFrame(Film* filmPtr);
+  void updateScene();
 
  signals:
   void filmJobResult(QDataStream* dataStream);
