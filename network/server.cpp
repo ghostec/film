@@ -1,4 +1,5 @@
 #include <Magick++.h>
+#include <QByteArray>
 #include <QVector>
 #include <QtDebug>
 #include <QtNetwork>
@@ -25,6 +26,19 @@ Server::Server() : coordinator(800, 600), gui(nullptr) {
 
 void Server::listen(QHostAddress addr, quint16 port) {
   tcpServer.listen(addr, port);
+}
+
+void Server::setScene(Scene* scenePtr) { this->scenePtr = scenePtr; }
+
+void Server::sendSceneToWorkers() {
+  QByteArray bytes;
+  QDataStream stream(&bytes, QIODevice::WriteOnly);
+  stream.setVersion(QDataStream::Qt_4_0);
+  stream << scenePtr;
+
+  for (auto& socket : sockets.keys()) {
+    *(sockets.value(socket)) << bytes;
+  }
 }
 
 void Server::acceptConnection() {

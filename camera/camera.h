@@ -13,6 +13,7 @@ class Camera {
   point3 origin, lower_left_corner;
   vec3 horizontal, vertical;
 
+  Camera(point3 origin, point3 lowerLeftCorner, vec3 horizontal, vec3 vertical);
   Camera(point3 look_from, point3 look_at, vec3 up, float vfov, float aspect);
   ray getRay(float u, float v);
   void render(Film* filmPtr, Hitable* worldPtr, size_t firstRow, size_t lastRow,

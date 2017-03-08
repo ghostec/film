@@ -3,7 +3,8 @@
 #include "sphere.h"
 
 namespace film {
-Sphere::Sphere(point3 center, float radius) : center(center), radius(radius) {}
+Sphere::Sphere(point3 center, float radius)
+    : Hitable(hitable_t::SPHERE), center(center), radius(radius) {}
 Sphere::~Sphere() {}
 
 HitRecord Sphere::hit(const ray& ray, float t_min, float t_max) const {

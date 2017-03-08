@@ -4,6 +4,10 @@ namespace film {
 Scene::Scene() {}
 Scene::~Scene() {}
 
+Camera* Scene::getCamera() const { return cameraPtr; }
+
+Hitable* Scene::getWorld() const { return worldPtr; }
+
 void Scene::setCamera(Camera* cameraPtr) { this->cameraPtr = cameraPtr; }
 
 void Scene::setWorld(Hitable* worldPtr) { this->worldPtr = worldPtr; }

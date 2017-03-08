@@ -5,6 +5,13 @@
 #include "math/rgb.h"
 
 namespace film {
+Camera::Camera(point3 origin, point3 lowerLeftCorner, vec3 horizontal,
+               vec3 vertical)
+    : origin(origin),
+      lower_left_corner(lowerLeftCorner),
+      horizontal(horizontal),
+      vertical(vertical) {}
+
 Camera::Camera(point3 look_from, point3 look_at, vec3 up, float vfov,
                float aspect) {
   vec3 u, v, w;

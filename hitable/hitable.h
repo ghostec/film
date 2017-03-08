@@ -6,6 +6,8 @@
 #include "math/ray.h"
 
 namespace film {
+enum class hitable_t : int { SPHERE };
+
 struct HitRecord {
   bool hit;
   float t;
@@ -15,9 +17,13 @@ struct HitRecord {
 
 class Hitable {
  public:
-  Hitable() {}
+  Hitable(hitable_t type) : type(type) {}
   ~Hitable() {}
   virtual HitRecord hit(const ray& ray, float t_min, float t_max) const = 0;
+  hitable_t getType() const { return type; }
+
+ protected:
+  hitable_t type;
 };
 }
 

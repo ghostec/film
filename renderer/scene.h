@@ -10,6 +10,8 @@ class Scene {
  public:
   Scene();
   ~Scene();
+  Camera* getCamera() const;
+  Hitable* getWorld() const;
   void setCamera(Camera* cameraPtr);
   void setWorld(Hitable* worldPtr);
   void render(Film* filmPtr, size_t firstRow, size_t lastRow, size_t width,

@@ -7,6 +7,7 @@
 #include <QVector>
 
 #include "coordinator.h"
+#include "renderer/scene.h"
 
 namespace film {
 class Server : public QObject {
@@ -15,6 +16,8 @@ class Server : public QObject {
  public:
   Server();
   void listen(QHostAddress addr, quint16 port);
+  void setScene(Scene* scenePtr);
+  void sendSceneToWorkers();
 
  private slots:
   void acceptConnection();
@@ -35,6 +38,7 @@ class Server : public QObject {
   QVector<QTcpSocket*> workers;
   QTcpSocket* gui;
   Coordinator coordinator;
+  Scene* scenePtr;
 
   void sendFilmJob(QDataStream* dataStreamPtr);
 };
